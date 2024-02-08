@@ -1,13 +1,19 @@
 # attendance_app
 
-A new Flutter project.
+This is a Flutter project that provides functionality for both teachers and students to manage attendance.
 
-Currently only displays "Hello World" for both teachers and students.
+## Features
 
-Teacher Login:
-email: teacher@email.com
-password: Teacher123!
+- Teacher and student login functionality.
+- Displays "Hello World" for both teachers and students.
 
-Student Login:
-email: student@email.com
-password: Student123!
+## Teacher Login Credentials
+
+- **Email:** teacher@email.com
+- **Password:** Teacher123!
+
+## Student Login Credentials
+
+- **Email:** student@email.com
+- **Password:** Student123!
+
