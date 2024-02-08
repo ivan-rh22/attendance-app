@@ -9,11 +9,10 @@ This is a Flutter project that provides functionality for both teachers and stud
 
 ## Teacher Login Credentials
 
-- **Email:** teacher@email.com
+- **Email:** <teacher@email.com>
 - **Password:** Teacher123!
 
 ## Student Login Credentials
 
-- **Email:** student@email.com
+- **Email:** <student@email.com>
 - **Password:** Student123!
-
