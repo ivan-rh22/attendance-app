@@ -12,20 +12,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int aindex = 1;
   List<Widget> screens = const [
-    Text('hello for now!'),
-    Text('Home screen'),
-    SettingsScreen(),
-  ];
+    Text('hello for now!'), //This is where the camera screen is being listed
+    Text('Home screen'), // This is where the home screen is being listed (currently no widget control)
+    SettingsScreen(), //This is hopefully how the two above should look once those screens are set up
+  ]; // it essentially leads to another file that populates the screen with the right info.
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { //Here the navigation bar is created, given logos, and names
     return Scaffold(
       body: Center(child: screens[aindex]),
       bottomNavigationBar: NavigationBar(
         height: 60,
-        selectedIndex: aindex,
-        onDestinationSelected: (index) => setState(() => aindex = index),//(index) => setState(() => aindex = index),
-        destinations:const [
+        selectedIndex: aindex, //where navbar is first selected (in this case it will be home)
+        onDestinationSelected: (index) => setState(() => aindex = index),//(index) => setState(() => aindex = index), <- ignore for now
+        destinations:const [ //Here are the three current destinations in the navigation bar.
           NavigationDestination(icon: Icon(Icons.map_outlined), 
           selectedIcon: Icon(Icons.map), 
           label: 'CAMERA', 

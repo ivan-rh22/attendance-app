@@ -5,7 +5,9 @@ This is a Flutter project that provides functionality for both teachers and stud
 ## Features
 
 - Teacher and student login functionality.
-- Displays "Hello World" for both teachers and students.
+- Displays 3 pages that can be navigated through the bottom navigation bar. (camera, home, settings)
+- Settings is where the logout button can be found, home and camera currently have placeholders.
+  + Notes added to home_screen.dart and settings_screen.dart
 
 ## Teacher Login Credentials
 

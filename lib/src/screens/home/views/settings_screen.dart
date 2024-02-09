@@ -13,7 +13,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(//NOTES BELOW
       appBar: AppBar(
         title: const Text('Settings'), centerTitle: true
       ),
@@ -34,3 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
+
+//Yet to find a way to display the email of the student given that this is a settings page, probably a good idea
+//to add a password reset in the future (if we stay 3rd party) and some way to display the user's name
+//I have some idea but not quite sure yet.
