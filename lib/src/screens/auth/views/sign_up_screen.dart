@@ -27,8 +27,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 	bool containsNumber = false;
 	bool containsSpecialChar = false;
 	bool contains8Length = false;
-  bool selectedS = false;
-  bool selectedT = false;
+  bool selectedStudent = false;
+  bool selectedTeacher = false;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: selectedS ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: selectedStudent ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
                       foregroundColor: Colors.grey[800],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)
@@ -67,8 +67,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     onPressed: (){
                       setState(() {
-                        selectedS = true;
-                        selectedT = false;
+                        selectedStudent = true;
+                        selectedTeacher = false;
                         isTeacher = false;
                       });
                     }, 
@@ -77,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: selectedT ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: selectedTeacher ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
                       foregroundColor: Colors.grey[800],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)
@@ -87,8 +87,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     
                     onPressed:(){
                       setState(() {
-                        selectedT = true;
-                        selectedS = false;
+                        selectedTeacher = true;
+                        selectedStudent = false;
                         isTeacher = true;
                       });
                     }, 
