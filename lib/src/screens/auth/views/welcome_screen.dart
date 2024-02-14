@@ -66,7 +66,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 							Align(
 								alignment: Alignment.center,
 								child: SizedBox(
-									height: MediaQuery.of(context).size.height / 1.7,
+									height: MediaQuery.of(context).size.height / 1.5,
 									child: Column(
 										children: [
 											Padding(
@@ -97,7 +97,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 													],
 												),
 											),
-                      const SizedBox(height: 5),
 											Expanded(
 												child: TabBarView(
 													controller: tabController,
