@@ -9,8 +9,8 @@ This is a Flutter project that provides functionality for both teachers and stud
 - Settings is where the logout button can be found, home and placeholder currently have placeholders.
   + Notes added to control_screen.dart and settings_screen.dart
 - **Files Location (To write the features)**:
-  + *Professor app:* \lib\src\screens\home/views\prof
-  + *Student app:* \lib\src\screens\home/views\stud
+  + *Professor app:* \lib\src\screens\views\prof
+  + *Student app:* \lib\src\screens\views\stud
 
 Currently: 
   - prof folder contains a tester view
