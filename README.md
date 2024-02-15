@@ -7,7 +7,7 @@ This is a Flutter project that provides functionality for both teachers and stud
 - Teacher and student login functionality.
 - Displays 3 pages that can be navigated through the bottom navigation bar. (camera, home, settings)
 - Settings is where the logout button can be found, home and placeholder currently have placeholders.
-  + Notes added to home_screen.dart and settings_screen.dart
+  + Notes added to control_screen.dart and settings_screen.dart
 - **Files Location (To write the features)**:
   + *Professor app:* \lib\src\screens\home/views\prof
   + *Student app:* \lib\src\screens\home/views\stud

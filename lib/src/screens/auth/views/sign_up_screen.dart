@@ -17,6 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final emailController = TextEditingController();
 	final nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool isTeacherSelected = false;
 	IconData iconPassword = CupertinoIcons.eye_fill;
 	bool obscurePassword = true;
 	bool signUpRequired = false;
@@ -26,6 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 	bool containsNumber = false;
 	bool containsSpecialChar = false;
 	bool contains8Length = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Center(
           child: Column(
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: !isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                      foregroundColor: Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
+                    ),
+
+                    onPressed: (){
+                      setState(() {
+                        isTeacherSelected = false;
+                      });
+                    }, 
+                    icon: const Icon(CupertinoIcons.book),
+                    label: const Text('Student'),
+                  ),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                      foregroundColor: Colors.grey[800],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
+                    ),
+                    
+                    onPressed:(){
+                      setState(() {
+                        isTeacherSelected = true;
+                      });
+                    }, 
+                    icon: const Icon(Icons.school_outlined),
+                    label: const Text('Teacher'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: MyTextField(
@@ -233,6 +277,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           MyUser myUser = MyUser.empty;
                           myUser.email = emailController.text;
                           myUser.name = nameController.text;
+                          myUser.isTeacher = isTeacherSelected;
                           
                           setState(() {
                             context.read<SignUpBloc>().add(
