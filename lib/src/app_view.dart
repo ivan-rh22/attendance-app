@@ -1,6 +1,6 @@
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
-import 'package:attendance_app/src/screens/home/views/prof/pcontroller.dart';
-import 'package:attendance_app/src/screens/home/views/stud/scontroller.dart';
+import 'package:attendance_app/src/screens/views/prof/pcontroller.dart';
+import 'package:attendance_app/src/screens/views/stud/scontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

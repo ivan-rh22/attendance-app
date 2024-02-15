@@ -1,5 +1,5 @@
-import 'package:attendance_app/src/screens/home/views/prof/views/prof_home_screen.dart';
-import 'package:attendance_app/src/screens/home/views/settings_screen.dart';
+import 'package:attendance_app/src/screens/views/prof/views/prof_home_screen.dart';
+import 'package:attendance_app/src/screens/views/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfControl extends StatefulWidget {

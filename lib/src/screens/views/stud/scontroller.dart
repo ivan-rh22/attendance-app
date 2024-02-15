@@ -1,6 +1,6 @@
-import 'package:attendance_app/src/screens/home/views/settings_screen.dart';
-import 'package:attendance_app/src/screens/home/views/stud/views/camera_screen.dart';
-import 'package:attendance_app/src/screens/home/views/stud/views/student_home_screen.dart';
+import 'package:attendance_app/src/screens/views/settings_screen.dart';
+import 'package:attendance_app/src/screens/views/stud/views/camera_screen.dart';
+import 'package:attendance_app/src/screens/views/stud/views/student_home_screen.dart';
 import 'package:flutter/material.dart';
 
 class StudControl extends StatefulWidget {
