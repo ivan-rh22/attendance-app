@@ -4,7 +4,7 @@ class MyUser {
   String userId;
   String email;
   String name;
-  final bool isTeacher;
+  bool isTeacher;
 
   MyUser(
       {required this.userId,
