@@ -44,14 +44,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 				} else if(state is SignUpFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Sign-Up Failed: ${state.error}'),
+              content: Center(child:Text(state.error)),
               backgroundColor: Colors.red,
             )
           );
           setState(() {
             signUpRequired = false;
           });
-					return;
 				} 
 			},
 			child: Form(

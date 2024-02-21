@@ -17,7 +17,12 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
         await _userRepository.setUserData(myUser);
         emit(SignUpSuccess());
       } catch (e) {
-        emit(SignUpFailure(error: e.toString()));
+         String errorMessage = e.toString();
+        int colonIndex = errorMessage.indexOf(':');
+        if (colonIndex != -1 && colonIndex + 1 < errorMessage.length) {
+          errorMessage = errorMessage.substring(colonIndex + 1).trim();
+        }
+        emit(SignUpFailure(error: errorMessage));
       }
     });
   }
