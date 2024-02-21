@@ -42,6 +42,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
 					  signUpRequired = true;
 					});
 				} else if(state is SignUpFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Sign-Up Failed: ${state.error}'),
+              backgroundColor: Colors.red,
+            )
+          );
+          setState(() {
+            signUpRequired = false;
+          });
 					return;
 				} 
 			},
