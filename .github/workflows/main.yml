@@ -4,7 +4,7 @@
 name: main
 
 # Trigger the workflow manually or after push a commit
-on: [ pull_request ]
+on: [ push, pull_request ]
 
 # 2 jobs are configured.
 # The first one runs tests on iOS devices.
@@ -21,7 +21,7 @@ jobs:
           - "iPhone 11 Simulator (15.2)" # the name of the simulator could be different depending on the macos version you are using
       # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
       fail-fast: true
-    runs-on: macos-latest-xl # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
+    runs-on: macOS-latest # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
     steps:
       - name: "List all simulators"
         run: "xcrun xctrace list devices"
@@ -53,7 +53,7 @@ jobs:
 
   # job responsible for running Flutter tests on Android devices
   android:
-    runs-on: macos-latest-xl
+    runs-on: macOS-latest
     strategy:
       matrix:
         api-level:
@@ -62,11 +62,17 @@ jobs:
       fail-fast: true
     steps:
       - uses: actions/checkout@v3
+      # Set Up Java
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      # Set Up Flutter environment
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
-          # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
+          channel: stable # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
           # flutter-version: '<FLUTTER_VERSION>'
       # - name: Install Flutter dependencies
       #   run: flutter pub get
@@ -74,7 +80,7 @@ jobs:
       # - name: Run Unit Tests
       #   run: flutter test
       # # Integration Test
-      # - name: Run integration Tests
+      # - name: Run Integration Tests
       #   # more info on https://github.com/ReactiveCircus/android-emulator-runner
       #   uses: reactivecircus/android-emulator-runner@v2
       #   with:
