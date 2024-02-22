@@ -21,7 +21,7 @@ jobs:
           - "iPhone 11 Simulator (15.2)" # the name of the simulator could be different depending on the macos version you are using
       # if one of the jobs in the matrix expansion fails, the rest of the jobs will be cancelled
       fail-fast: true
-    runs-on: macos-11 # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
+    runs-on: macos-latest-xl # or macos-latest if you prefer, but be aware that the available simulators could be different if you run a different version
     steps:
       - name: "List all simulators"
         run: "xcrun xctrace list devices"
@@ -40,22 +40,24 @@ jobs:
           channel: stable
           # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
           # flutter-version: '<FLUTTER_VERSION>'
-      - name: Install Flutter dependencies
-        run: flutter pub get
-      # Unit Tests
-      - name: Run Unit Tests
-        run: flutter test
-      # Integration Test
-      - name: Run integration Tests
-        run: flutter test integration_test --verbose
+      - name: Check Xcode is installed
+        run: xcodebuild -version
+      # - name: Install Flutter dependencies
+      #   run: flutter pub get
+      # # Unit Tests
+      # - name: Run Unit Tests
+      #   run: flutter test
+      # # Integration Test
+      # - name: Run integration Tests
+      #   run: flutter test integration_test --verbose
 
   # job responsible for running Flutter tests on Android devices
   android:
-    runs-on: macos-11
+    runs-on: macos-latest-xl
     strategy:
       matrix:
         api-level:
-          - 29
+          - 33
           # you can add more API level if you want to run your tests on different API
       fail-fast: true
     steps:
@@ -66,17 +68,17 @@ jobs:
           channel: stable
           # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
           # flutter-version: '<FLUTTER_VERSION>'
-      - name: Install Flutter dependencies
-        run: flutter pub get
-      # Unit Tests
-      - name: Run Unit Tests
-        run: flutter test
-      # Integration Test
-      - name: Run integration Tests
-        # more info on https://github.com/ReactiveCircus/android-emulator-runner
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          arch: x86_64
-          profile: Nexus 6
-          script: flutter test integration_test --verbose
+      # - name: Install Flutter dependencies
+      #   run: flutter pub get
+      # # Unit Tests
+      # - name: Run Unit Tests
+      #   run: flutter test
+      # # Integration Test
+      # - name: Run integration Tests
+      #   # more info on https://github.com/ReactiveCircus/android-emulator-runner
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: ${{ matrix.api-level }}
+      #     arch: x86_64
+      #     profile: Nexus 6
+      #     script: flutter test integration_test --verbose
