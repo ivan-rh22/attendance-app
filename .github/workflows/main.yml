@@ -40,13 +40,11 @@ jobs:
           channel: stable
           # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
           # flutter-version: '<FLUTTER_VERSION>'
-      - name: Check Xcode is installed
-        run: xcodebuild -version
-      # - name: Install Flutter dependencies
-      #   run: flutter pub get
-      # # Unit Tests
-      # - name: Run Unit Tests
-      #   run: flutter test
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      # Unit Tests
+      - name: Run Unit Tests
+        run: flutter test
       # # Integration Test
       # - name: Run integration Tests
       #   run: flutter test integration_test --verbose
@@ -74,11 +72,11 @@ jobs:
         with:
           channel: stable # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
           # flutter-version: '<FLUTTER_VERSION>'
-      # - name: Install Flutter dependencies
-      #   run: flutter pub get
-      # # Unit Tests
-      # - name: Run Unit Tests
-      #   run: flutter test
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      # Unit Tests
+      - name: Run Unit Tests
+        run: flutter test
       # # Integration Test
       # - name: Run Integration Tests
       #   # more info on https://github.com/ReactiveCircus/android-emulator-runner
