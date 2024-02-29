@@ -1,7 +1,7 @@
 # .github/workflows/main.yml
 
 # Name of your workflow.
-name: main
+name: CI Workflow
 
 # Trigger the workflow manually or after push a commit
 on: [ pull_request ]
@@ -44,7 +44,7 @@ jobs:
         run: flutter pub get
       # Unit Tests
       - name: Run Unit Tests
-        run: flutter test
+        run: flutter test -r expanded
       # # Integration Test
       # - name: Run integration Tests
       #   run: flutter test integration_test --verbose
@@ -76,7 +76,7 @@ jobs:
         run: flutter pub get
       # Unit Tests
       - name: Run Unit Tests
-        run: flutter test
+        run: flutter test -r expanded
       # # Integration Test
       # - name: Run Integration Tests
       #   # more info on https://github.com/ReactiveCircus/android-emulator-runner
