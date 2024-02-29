@@ -1,8 +1,6 @@
-import 'package:test/test.dart';
+import 'models/user_tests.dart';
 // Temporary test to verify that the unit test is running.
 
 void main() {
-  test('unit test', () {
-    expect(1, 1);
-  });
+  userTest();
 }
