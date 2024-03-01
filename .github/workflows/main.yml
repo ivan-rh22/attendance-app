@@ -44,7 +44,7 @@ jobs:
         run: flutter pub get
       # Unit Tests
       - name: Run Unit Tests
-        run: flutter test -r expanded
+        run: flutter test
       # # Integration Test
       # - name: Run integration Tests
       #   run: flutter test integration_test --verbose
@@ -76,7 +76,7 @@ jobs:
         run: flutter pub get
       # Unit Tests
       - name: Run Unit Tests
-        run: flutter test -r expanded
+        run: flutter test
       # # Integration Test
       # - name: Run Integration Tests
       #   # more info on https://github.com/ReactiveCircus/android-emulator-runner

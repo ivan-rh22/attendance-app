@@ -12,9 +12,10 @@ class _CameraState extends State<Camera> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:const Color.fromARGB(255, 201, 64, 0),
-        title: const Text('Camera', style: TextStyle(color: Colors.white)), centerTitle: true
-      ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text('Camera',
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+          centerTitle: true),
       body: const Center(
         child: Text('Face Scan/Picture'),
       ),

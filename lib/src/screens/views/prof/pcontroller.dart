@@ -22,8 +22,8 @@ class _ProfControlState extends State<ProfControl> {
     return Scaffold(
       body: Center(child: screens[aindex]),
       bottomNavigationBar: NavigationBar(
-        indicatorColor: Colors.amber,
-        backgroundColor: Colors.orange,
+        indicatorColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         height: 60,
         selectedIndex: aindex, //where navbar is first selected (in this case it will be home)
         onDestinationSelected: (index) => setState(() => aindex = index),//(index) => setState(() => aindex = index), <- ignore for now
