@@ -37,4 +37,14 @@ Future<void> main() async {
         expect(find.byKey(const Key('sign_in_password_textfield')), findsOneWidget);
     });
   });
+
+  // FUTURE TODO: Add tests for the student user flow
+  group('Student Tests', () {
+
+  });
+
+  // FUTURE TODO: Add tests for the teacher user flow
+  group('Teacher Tests', () { 
+
+  });
 }
