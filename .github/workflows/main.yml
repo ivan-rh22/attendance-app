@@ -45,9 +45,9 @@ jobs:
       # Unit Tests
       - name: Run Unit Tests
         run: flutter test
-      # # Integration Test
-      # - name: Run integration Tests
-      #   run: flutter test integration_test --verbose
+      # Integration Test
+      - name: Run integration Tests
+        run: flutter test integration_test --verbose
 
   # job responsible for running Flutter tests on Android devices
   android:
@@ -77,12 +77,12 @@ jobs:
       # Unit Tests
       - name: Run Unit Tests
         run: flutter test
-      # # Integration Test
-      # - name: Run Integration Tests
-      #   # more info on https://github.com/ReactiveCircus/android-emulator-runner
-      #   uses: reactivecircus/android-emulator-runner@v2
-      #   with:
-      #     api-level: ${{ matrix.api-level }}
-      #     arch: x86_64
-      #     profile: Nexus 6
-      #     script: flutter test integration_test --verbose
+      # Integration Test
+      - name: Run Integration Tests
+        # more info on https://github.com/ReactiveCircus/android-emulator-runner
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          profile: Nexus 6
+          script: flutter test integration_test --verbose
