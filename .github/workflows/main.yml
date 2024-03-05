@@ -49,14 +49,9 @@ jobs:
       # - name: Run integration Tests
       #   run: flutter test integration_test
       # Test network
-      - name: Test network
-        run: |
-          ping -c 5 google.com
-          curl -v https://www.google.com
-          curl -v https://www.google.com --insecure
-          curl -v https://www.google.com --insecure --http2
-          curl -v https://www.google.com --insecure --http2 --http2-prior-knowledge
-          curl -v https://www.google.com --insecure --http2 --http2-prior-knowledge --resolve www.google.com:443:
+      - name: Check Internet Connectivity
+        run: ping -c 4 google.com
+
 
   # job responsible for running Flutter tests on Android devices
   # android:
