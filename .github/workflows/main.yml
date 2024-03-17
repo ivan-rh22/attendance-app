@@ -14,13 +14,17 @@ jobs:
   Unit-Tests:
     runs-on: macos-latest
     steps:
+      - name: Setup Repo
+        uses: actions/checkout@v3
+      - name: Setup JaVa
+        uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
       - name: Setup Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
-          # instead of "channel: stable", you could be more precise by specifying the exact version of Flutter you're using:
-          # flutter-version: '<FLUTTER_VERSION>'
-      - name: Install Flutter dependencies
+          channel: 'stable'
+      - name: Pub Get
         run: flutter pub get
       # Unit Tests
       - name: Run Unit Tests
@@ -31,13 +35,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Setup Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup JaVa
         uses: actions/setup-java@v1
         with:
           java-version: '12.x'
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
       - name: Pub Get
