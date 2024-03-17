@@ -52,7 +52,11 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+      # Android integration tests
       - name: Run Android integration tests
         run: ./android_integration.sh
+      # iOS integration tests - (pending on developer account and certificates)
+      # - name: Run iOS integration tests
+      #   run: ./ios_integration.sh
       
   
