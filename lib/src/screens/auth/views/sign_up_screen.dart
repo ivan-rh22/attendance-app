@@ -63,6 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton.icon(
+                    key: const Key('sign_up_as_student_button'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: !isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
                       foregroundColor: Colors.grey[800],
@@ -81,6 +82,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     label: const Text('Student'),
                   ),
                   ElevatedButton.icon(
+                    key: const Key('sign_up_as_teacher_button'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
                       foregroundColor: Colors.grey[800],
@@ -102,6 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 10),
               SizedBox(
+                key: const Key('sign_up_email_textfield'),
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: MyTextField(
                   controller: emailController,
@@ -121,6 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 10),
               SizedBox(
+                key: const Key('sign_up_password_textfield'),
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: MyTextField(
                   controller: passwordController,
@@ -258,6 +262,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 10),
               SizedBox(
+                key: const Key('sign_up_name_textfield'),
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: MyTextField(
                   controller: nameController,

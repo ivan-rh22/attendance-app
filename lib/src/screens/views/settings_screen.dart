@@ -23,6 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const Text('Welcome to Auto Attendance'),
             ElevatedButton(
+              key: const Key('sign_out_button'),
               onPressed: () {
                 context.read<SignInBloc>().add(SignOutRequired());
               },

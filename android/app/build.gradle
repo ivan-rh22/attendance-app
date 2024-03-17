@@ -38,6 +38,10 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+
+        androidTest{
+            java.srcDirs 'android/app/src/androidTest/java'
+        }
     }
 
     defaultConfig {
@@ -50,6 +54,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -65,4 +70,11 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // https://developer.android.com/jetpack/androidx/releases/test
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}

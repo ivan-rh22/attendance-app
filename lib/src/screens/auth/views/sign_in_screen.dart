@@ -46,6 +46,7 @@ class _SignInScreenState extends State<SignInScreen> {
           children: [
             const SizedBox(height: 20),
             SizedBox(
+              key: const Key('sign_in_email_textfield'),
               width: MediaQuery.of(context).size.width * 0.9,
               child: MyTextField(
                 controller: emailController,
@@ -66,6 +67,7 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
             const SizedBox(height: 10),
             SizedBox(
+              key: const Key('sign_in_password_textfield'),
               width: MediaQuery.of(context).size.width * 0.9,
               child: MyTextField(
                 controller: passwordController,
@@ -100,6 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 20),
             !signInRequired
               ? SizedBox(
+                  key: const Key('sign_in_button'),
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: TextButton(
                     onPressed: () {

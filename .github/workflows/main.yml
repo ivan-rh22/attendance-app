@@ -1,0 +1,62 @@
+# .github/workflows/main.yml
+
+# Name of your workflow.
+name: CI Workflow
+
+# Trigger the workflow manually or after push a commit
+on: [ pull_request ]
+
+# 2 jobs are configured.
+# The first one runs tests on iOS devices.
+# The second runs tests on Android devices
+jobs:
+
+  Unit-Tests:
+    runs-on: macos-latest
+    steps:
+      - name: Setup Repo
+        uses: actions/checkout@v3
+      - name: Setup JaVa
+        uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Pub Get
+        run: flutter pub get
+      # Unit Tests
+      - name: Run Unit Tests
+        run: flutter test
+
+  # job responsible for running Flutter integration tests
+  Integration-Tests:
+    runs-on: macos-latest
+    steps:
+      - name: Setup Repo
+        uses: actions/checkout@v3
+      - name: Setup JaVa
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17.x'
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Pub Get
+        run: flutter pub get
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      # Android integration tests
+      - name: Run Android integration tests
+        run: ./android_integration.sh
+      # iOS integration tests - (pending on developer account and certificates)
+      # - name: Run iOS integration tests
+      #   run: ./ios_integration.sh
+      
+  

@@ -15,11 +15,12 @@ class MyAppView extends StatelessWidget {
         title: 'Auto Attendance',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            colorScheme: ColorScheme.light(
-          background: Colors.grey.shade100,
-          onBackground: Colors.black,
-          primary: Colors.blue,
-          onPrimary: Colors.white,
+          colorScheme: ColorScheme.light(
+            background: Colors.grey.shade100,
+            onBackground: Colors.black,
+            primary: Colors.blue,
+            onPrimary: Colors.white,
+            onPrimaryContainer: Colors.blue.shade100,
         )),
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: ((context, state) {

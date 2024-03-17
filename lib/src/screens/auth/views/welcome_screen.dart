@@ -27,7 +27,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +76,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 													labelColor: Theme.of(context).colorScheme.onBackground,
 													tabs: const [
 														Padding(
+                              key: Key('sign_in_tab'),
 															padding: EdgeInsets.all(12.0),
 															child: Text(
 																'Sign In',
@@ -86,6 +86,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
 															),
 														),
 														Padding(
+                              key: Key('sign_up_tab'),
 															padding: EdgeInsets.all(12.0),
 															child: Text(
 																'Sign Up',
