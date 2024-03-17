@@ -37,6 +37,12 @@ class FirebaseUserRepo implements UserRepository{
   @override
   Future<MyUser> signUp(MyUser myUser, String password) async {
     try{
+      // Check if the email already exists
+      bool emailExists = await checkEmailExists(myUser.email);
+      if(emailExists) {
+        throw Exception('Email already exists');
+      }
+
       UserCredential user = await _firebaseAuth.createUserWithEmailAndPassword(
         email: myUser.email,
         password: password
@@ -66,5 +72,13 @@ class FirebaseUserRepo implements UserRepository{
       rethrow;
     }
   }
-  
+  // HELPER FUNCTIONS
+  Future<bool> checkEmailExists(String email) async {
+    QuerySnapshot <Map<String, dynamic>> query = await usersCollection
+      .where('email', isEqualTo: email)
+      .limit(1)
+      .get();
+
+    return query.docs.isNotEmpty;
+  }
 }
