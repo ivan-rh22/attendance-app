@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:attendance_app/main.dart' as app;
 
 Future<void> main() async {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   group('Mutual Test', () {
     testWidgets('User Lands On Welcome Screen', (widgetTester) async {
       app.main();
-      await widgetTester.pumpAndSettle();
+      await widgetTester.pumpAndSettle(const Duration(seconds: 5));
       // Verify that the user lands on the sign in screen
       expect(find.byKey(const Key('sign_in_tab')), findsOneWidget);
       expect(find.byKey(const Key('sign_up_tab')), findsOneWidget);
