@@ -15,6 +15,7 @@ class _StudentHomeState extends State<StudentHome> {
   final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>(); 
   final Location _locationController = Location();
   LatLng? _currentPos;
+  StreamSubscription<LocationData>? _locationSubscription;
 
   @override
   void initState() {
@@ -82,7 +83,7 @@ class _StudentHomeState extends State<StudentHome> {
       }
     }
     await _locationController.enableBackgroundMode(enable: true);
-    _locationController.onLocationChanged.listen((LocationData currentLocation) {
+    _locationSubscription = _locationController.onLocationChanged.listen((LocationData currentLocation) {
       if(currentLocation.latitude != null && currentLocation.longitude != null){
         setState(() {
           _currentPos = LatLng(currentLocation.latitude!, currentLocation.longitude!);
@@ -90,5 +91,11 @@ class _StudentHomeState extends State<StudentHome> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
   }
 }
