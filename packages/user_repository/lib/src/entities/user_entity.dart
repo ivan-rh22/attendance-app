@@ -3,20 +3,23 @@ class MyUserEntity {
   String email;
   String name;
   final bool isTeacher;
+  List<String> courses;
 
   MyUserEntity({
     required this.userId,
     required this.email,
     required this.name,
-    required this.isTeacher
-  });
+    required this.isTeacher,
+    List<String>? courses,
+  }) : courses = [];
 
   Map<String, Object?> toJson() {
     return {
       'userId': userId,
       'email': email,
       'name': name,
-      'isTeacher': isTeacher
+      'isTeacher': isTeacher,
+      'courses': courses,
     };
   }
 
@@ -26,6 +29,7 @@ class MyUserEntity {
       email: json['email'],
       name: json['name'],
       isTeacher: json['isTeacher'],
+      courses: List<String>.from(json['courses']),
     );
   }
 }
