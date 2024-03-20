@@ -29,7 +29,7 @@ class MyUserEntity {
       email: json['email'],
       name: json['name'],
       isTeacher: json['isTeacher'],
-      courses: List<String>.from(json['courses']),
+      courses: json['courses'] != null ? List<String>.from(json['courses']) : [],
     );
   }
 }

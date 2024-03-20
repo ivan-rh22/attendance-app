@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CourseEntity {
   String courseId;
@@ -6,7 +7,7 @@ class CourseEntity {
   List<int> daysOfWeek;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  List<double> classroomCoordinates;
+  LatLng? classroomCoordinates;
   List<String> studentIds;
 
   CourseEntity({
