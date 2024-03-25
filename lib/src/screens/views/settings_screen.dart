@@ -15,6 +15,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late final MyUser currentUser;
+
+  // TODO: remove this hardcoded URL
   final String userProfilePhotoUrl = 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg';
 
   @override
@@ -41,6 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(10),
+                        // TODO: Replace this hardcoded URL for the user's profile photo
                         child: CircleAvatar(
                           radius: 40,
                           backgroundImage: NetworkImage(userProfilePhotoUrl),
@@ -131,23 +134,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
-                  const ListTile(
-                    leading: Icon(Icons.notifications),
-                    title: Text('Notifications',
+                  ListTile(
+                    key: const Key('notifications_settings_tile'),
+                    enableFeedback: true,
+                    onTap: () {}, // TODO: implement notifications
+                    leading: const Icon(Icons.notifications),
+                    title: const Text('Notifications',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    subtitle: Text('Manage notifications'),
+                    subtitle: const Text('Manage notifications'),
                   ),
-                  const ListTile(
-                    leading: Icon(Icons.language),
-                    title: Text('Language',
+                  ListTile(
+                    key: const Key('language_settings_tile'),
+                    enableFeedback: true,
+                    onTap: () {}, // TODO: implement language settings
+                    leading: const Icon(Icons.language),
+                    title: const Text('Language',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    subtitle: Text('Change the language'),
+                    subtitle: const Text('Change the language'),
                   ),
                 ],
               ),
@@ -165,24 +174,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       fontSize: 20,
                     ),
                   ),
-                  const ListTile(
-                    leading: Icon(Icons.lock),
-                    title: Text('Change Password',
+                  ListTile(
+                    key: const Key('change_password_tile'),
+                    enableFeedback: true,
+                    onTap: () {}, // TODO: implement change password
+                    leading: const Icon(Icons.lock),
+                    title: const Text('Change Password',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    subtitle: Text('Change your password'),
+                    subtitle: const Text('Change your password'),
                   ),
-                  const ListTile(
-                    leading: Icon(Icons.delete, color: Colors.red),
-                    title: Text('Delete Account',
+                  ListTile(
+                    enableFeedback: true,
+                    onTap: () {}, // TODO: implement delete account
+                    leading: const Icon(Icons.delete, color: Colors.red),
+                    title: const Text('Delete Account',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.red,
                       ),
                     ),
-                    subtitle: Text('Delete your account',
+                    subtitle: const Text('Delete your account',
                       style: TextStyle(
                         color: Colors.red,
                       ),
