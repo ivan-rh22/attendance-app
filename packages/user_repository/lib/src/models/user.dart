@@ -15,7 +15,7 @@ class MyUser {
       List<String>? courses,
   }) : courses = courses ?? [];
 
-  static final empty = MyUser(userId: '', email: '', name: '', isTeacher: false);
+  static final empty = MyUser(userId: '', email: '', name: '', isTeacher: false, );
 
   MyUserEntity toEntity() {
     return MyUserEntity(

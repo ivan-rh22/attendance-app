@@ -10,7 +10,7 @@ class ProfControl extends StatefulWidget {
 }
 
 class _ProfControlState extends State<ProfControl> {
-  int aindex = 1;
+  int aindex = 0;
   List<Widget> screens = const [
     ProfHome(),
     SettingsScreen(), 
@@ -30,7 +30,7 @@ class _ProfControlState extends State<ProfControl> {
         destinations:const [ //Here are the three current destinations in the navigation bar.
           NavigationDestination(icon: Icon(Icons.home_outlined), 
           selectedIcon: Icon(Icons.home_filled), 
-          label: 'HOME',
+          label: 'COURSES',
           ),
           NavigationDestination(icon: Icon(Icons.settings_outlined), 
           selectedIcon: Icon(Icons.settings), 

@@ -11,7 +11,7 @@ class MyUserEntity {
     required this.name,
     required this.isTeacher,
     List<String>? courses,
-  }) : courses = [];
+  }) : courses = courses ?? [];
 
   Map<String, Object?> toJson() {
     return {
