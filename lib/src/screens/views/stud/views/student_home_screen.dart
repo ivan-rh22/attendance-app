@@ -13,9 +13,13 @@ class StudentHome extends StatefulWidget {
 
 class _StudentHomeState extends State<StudentHome> {
   final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>(); 
-  final Location _locationController = Location();
+  final Location locationController = Location();
   LatLng? _currentPos;
   StreamSubscription<LocationData>? _locationSubscription;
+  Color buttonColor = Colors.green;
+  String buttonText = 'Clock in';
+  IconData currentIcon = Icons.play_arrow;
+
 
   @override
   void initState() {
@@ -29,61 +33,68 @@ class _StudentHomeState extends State<StudentHome> {
       body: Stack( children: <Widget> [
         Center( 
           child: _currentPos == null ? 
-          const Center(child: Text("Loading...", textAlign: TextAlign.center,)) : 
+          const Center(child: CircularProgressIndicator()) : 
           GoogleMap(
-            onMapCreated: ((GoogleMapController controller) => _mapController.complete(controller)),
+            onMapCreated: ((GoogleMapController controller) => _mapController.complete(controller)), mapType: MapType.satellite,
             initialCameraPosition: CameraPosition(
               target: _currentPos!,
-              zoom: 18, tilt: 40),
+              zoom: 18),
               zoomControlsEnabled: false, 
               zoomGesturesEnabled: false,
-            markers: {
-              Marker(markerId: MarkerId("currentLocation"), position: _currentPos!)
-            }, 
+            circles: {
+              if (_currentPos != null)
+                Circle(circleId: const CircleId("userCircle"),
+                center: _currentPos!,
+                radius: 5,
+                strokeColor: Colors.white,
+                fillColor: Colors.blue,
+                strokeWidth: 3,
+                )
+            } 
           )
         ),
         Positioned(
           bottom: 20, right: 20,
           width: 130,
-          child: ElevatedButton(onPressed: (){}, style: //<============ Clock-in button added
-            ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromRGBO(13, 153, 0, 1),
-            ), 
-            child: const Text('Clock in', style: TextStyle(color: Color.fromRGBO(255, 255, 255, 1)),),
-          ),
+          child: FloatingActionButton.extended(
+            onPressed: updateButton,
+            label: Text(buttonText), 
+            icon: Icon(currentIcon), 
+            foregroundColor: Colors.white, 
+            backgroundColor: buttonColor,),
         ),
       ]),
     );
   }
   Future<void> _camToPos (LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
-    CameraPosition _newCameraPosition = CameraPosition(
+    CameraPosition newCameraPosition = CameraPosition(
       target: pos, 
-      zoom: 18, tilt: 40,
+      zoom: 18,
     );
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_newCameraPosition));
+    await controller.animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
   }
 
   Future<void> getLocation() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
 
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled){
-      _serviceEnabled = await _locationController.requestService();
+    serviceEnabled = await locationController.serviceEnabled();
+    if (serviceEnabled){
+      serviceEnabled = await locationController.requestService();
     } else {
       return Future.error("Location services disabled.");
     }
 
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if(_permissionGranted != PermissionStatus.granted){
+    permissionGranted = await locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await locationController.requestPermission();
+      if(permissionGranted != PermissionStatus.granted){
         return Future.error("Location services disabled.");
       }
     }
-    await _locationController.enableBackgroundMode(enable: true);
-    _locationSubscription = _locationController.onLocationChanged.listen((LocationData currentLocation) {
+    await locationController.enableBackgroundMode(enable: true);
+    _locationSubscription = locationController.onLocationChanged.listen((LocationData currentLocation) {
       if(currentLocation.latitude != null && currentLocation.longitude != null){
         setState(() {
           _currentPos = LatLng(currentLocation.latitude!, currentLocation.longitude!);
@@ -97,5 +108,20 @@ class _StudentHomeState extends State<StudentHome> {
   void dispose() {
     _locationSubscription?.cancel();
     super.dispose();
+  }
+
+  void updateButton() {
+    setState(() {
+      if(buttonColor == Colors.green){
+        buttonColor = Colors.red;
+        buttonText = 'Clock Out';
+        currentIcon = Icons.pause;
+      }
+      else{
+        buttonColor = Colors.green;
+        buttonText = 'Clock In';
+        currentIcon = Icons.play_arrow;
+      }
+    });
   }
 }
