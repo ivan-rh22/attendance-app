@@ -35,7 +35,7 @@ class _StudentHomeState extends State<StudentHome> {
           child: _currentPos == null ? 
           const Center(child: CircularProgressIndicator()) : 
           GoogleMap(
-            onMapCreated: ((GoogleMapController controller) => _mapController.complete(controller)), mapType: MapType.satellite,
+            onMapCreated: ((GoogleMapController controller) => _mapController.complete(controller)), mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
               target: _currentPos!,
               zoom: 18),
