@@ -58,40 +58,46 @@ class _ProfMapState extends State<ProfMap> {
               _addCircle(point, 20);
             },
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 20.0),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20.0),
-                color: Colors.grey[200],
-              ),
-              child: showcircle ? Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: TextField(
-                        controller: txtcontroller,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: 'Geofence Radius',
-                          border: InputBorder.none,
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20.0, 55.0, 20.0, 20.0),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Colors.grey[200],
+                ),
+                child: showcircle ? Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: TextField(
+                          controller: txtcontroller,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            hintText: 'Geofence Radius',
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: (){
-                      setState(() {
-                        _radius = double.parse(txtcontroller.text.toString());
-                        _addCircle(pointsave!, _radius);
-                      });
-                    },
-                    child: const Text('Confirm'),
-                  ),
-                ],
-              ) : const Text('Tap the map to create a geofence!')
+                    TextButton(
+                      onPressed: (){
+                        setState(() {
+                          _radius = double.parse(txtcontroller.text.toString());
+                          _addCircle(pointsave!, _radius);
+                        });
+                      },
+                      child: const Text('Confirm'),
+                    ),
+                  ],
+                ) : const Text('Tap the map to create a geofence!')
+              ),
             ),
           ),
 
