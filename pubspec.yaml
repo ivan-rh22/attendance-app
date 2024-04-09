@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.6
   font_awesome_flutter: ^10.6.0
+  google_maps_flutter: ^2.5.3
+  location: ^5.0.0
 
   firebase_core: ^2.25.4
 
