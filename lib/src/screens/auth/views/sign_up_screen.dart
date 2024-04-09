@@ -65,7 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ElevatedButton.icon(
                     key: const Key('sign_up_as_student_button'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: !isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                      backgroundColor: !isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primaryContainer.withOpacity(0.9),
                       foregroundColor: Colors.grey[800],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)
@@ -84,7 +84,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ElevatedButton.icon(
                     key: const Key('sign_up_as_teacher_button'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                      backgroundColor: isTeacherSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primaryContainer.withOpacity(0.9),
                       foregroundColor: Colors.grey[800],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15)
