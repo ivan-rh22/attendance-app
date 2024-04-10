@@ -44,11 +44,11 @@ class MyTextField extends StatelessWidget {
 				prefixIcon: prefixIcon,
 				enabledBorder: OutlineInputBorder(
 					borderRadius: BorderRadius.circular(10),
-					borderSide: const BorderSide(color: Colors.transparent),
+					borderSide: BorderSide(color: Colors.grey.shade700),
 				),
 				focusedBorder: OutlineInputBorder(
 					borderRadius: BorderRadius.circular(20),
-					borderSide: BorderSide(color: Theme.of(context).colorScheme.secondary),
+					borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
 				),
 				fillColor: Theme.of(context).colorScheme.primaryContainer,
 				filled: true,
