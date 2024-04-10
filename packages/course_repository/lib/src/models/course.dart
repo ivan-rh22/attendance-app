@@ -4,6 +4,7 @@ import '../entities/entities.dart';
 
 class Course {
   String courseId;
+  String courseName;
   String instructorId;
   List<int> daysOfWeek;
   TimeOfDay startTime;
@@ -13,6 +14,7 @@ class Course {
 
   Course({
     required this.courseId,
+    required this.courseName,
     required this.instructorId,
     required this.daysOfWeek,
     required this.startTime,
@@ -23,16 +25,18 @@ class Course {
 
   static final empty = Course(
     courseId: '',
+    courseName: '',
     instructorId: '',
     daysOfWeek: [],
-    startTime: const TimeOfDay(hour: 0, minute: 0),
-    endTime: const TimeOfDay(hour: 0, minute: 0),
+    startTime: const TimeOfDay(hour: 00, minute: 00),
+    endTime: const TimeOfDay(hour: 00, minute: 00),
     classroomCoordinates: null,
   );
 
   CourseEntity toEntity() {
     return CourseEntity(
       courseId: courseId,
+      courseName: courseName,
       instructorId: instructorId,
       daysOfWeek: daysOfWeek,
       startTime: startTime,
@@ -45,6 +49,7 @@ class Course {
   static Course fromEntity(CourseEntity entity) {
     return Course(
       courseId: entity.courseId,
+      courseName: entity.courseName,
       instructorId: entity.instructorId,
       daysOfWeek: entity.daysOfWeek,
       startTime: entity.startTime,
@@ -56,6 +61,6 @@ class Course {
 
   @override
   String toString() {
-    return 'Course: $courseId, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $studentIds';
+    return 'Course: $courseId, $courseName, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $studentIds';
   }
 }
