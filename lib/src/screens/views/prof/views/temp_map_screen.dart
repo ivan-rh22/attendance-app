@@ -15,15 +15,17 @@ class _ProfMapState extends State<ProfMap> {
   double _radius = 20;
   late LatLng? pointsave;
   bool showcircle = false;
+  bool smallercheck = false;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  void _addCircle(LatLng point, double radius) {
+  void _addCircle(LatLng point, double radius, bool smaller) {
     setState(() {
       showcircle = true;
       pointsave = point;
+      if(smaller){circles.clear();}
       circles.add(
         Circle(
           circleId: const CircleId('geofence'),
@@ -55,7 +57,7 @@ class _ProfMapState extends State<ProfMap> {
             circles: circles,
             onTap: (LatLng point) {
               _moveToLocation(point);
-              _addCircle(point, 20);
+              _addCircle(point, 20, false);
             },
           ),
           Positioned(
@@ -89,8 +91,9 @@ class _ProfMapState extends State<ProfMap> {
                     TextButton(
                       onPressed: (){
                         setState(() {
+                          double.parse(txtcontroller.text.toString()) < _radius ? smallercheck = true : smallercheck = false;
                           _radius = double.parse(txtcontroller.text.toString());
-                          _addCircle(pointsave!, _radius);
+                          _addCircle(pointsave!, _radius, smallercheck);
                         });
                       },
                       child: const Text('Confirm'),
@@ -117,7 +120,7 @@ class _ProfMapState extends State<ProfMap> {
                     ),
                     child: const Text('Finish', style: TextStyle(color: Colors.white),),
                     onPressed: () {
-
+                      
                     },
                   ),
                 ),
