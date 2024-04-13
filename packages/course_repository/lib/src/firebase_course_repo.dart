@@ -9,8 +9,25 @@ class FirebaseCourseRepo implements CourseRepository {
   FirebaseCourseRepo();
 
   @override
-  // TODO: get all users courses
-  Stream<Course?> get course => throw UnimplementedError();
+  Stream<List<Course>> courses(String userID) async* {
+    try{
+      // return the courses where the course id is in the user's courses list
+      // user's courses list is a list of course ids (start by getting this)
+      final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userID).get();
+      final userData = userSnapshot.data();
+      if(userData != null){
+        final List<dynamic> courses = userData['courses'] ?? [];
+        final courseSnapshots = await coursesCollection.where(FieldPath.documentId, whereIn: courses).get();
+        yield courseSnapshots.docs.map((doc) => Course.fromEntity(CourseEntity.fromJson(doc.data()))).toList();
+      }
+      else {
+        throw Exception('User not found');
+      }
+    } catch(e) {
+      log('Error getting courses: ${e.toString()}');
+      rethrow;
+    }
+  }
 
   @override
   Future<Course> createCourse(Course course, String userId) async {
@@ -92,20 +109,6 @@ class FirebaseCourseRepo implements CourseRepository {
       log('Error updating course: ${e.toString()}');
       rethrow;
     }
-  }
-  
-  Future<Course> getCourse(String courseID) async {
-    try{
-      final snapshot = await coursesCollection.doc(courseID).get();
-      if(snapshot.exists){
-        return Course.fromEntity(CourseEntity.fromJson(snapshot.data()!));
-      } else {
-        throw Exception('Course not found');
-      }
-    } catch(e) {
-      log('Error getting course: ${e.toString()}');
-      rethrow;
-    }
-  }
-  
+  } 
+
 }

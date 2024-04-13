@@ -1,4 +1,5 @@
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/blocs/get_courses_bloc/get_courses_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
@@ -14,12 +15,35 @@ class ProfHome extends StatefulWidget {
 
 class _ProfHomeState extends State<ProfHome> {
   late final MyUser currentUser;
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     currentUser = context.read<AuthenticationBloc>().state.user!;
+    context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
+    _scrollController.addListener(_onScroll);
   }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200.0 &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,24 +57,35 @@ class _ProfHomeState extends State<ProfHome> {
         ? const Center(
           child: Text('You have no courses yet.')
         )
-        : const Center(
-          child: Text('You have courses.')
-        ),
-        // TODO: Implement the following ListView.builder
-        
-        // : ListView.builder(
-        //   itemCount: currentUser.courses.length,
-        //   itemBuilder: (context, index) {
-        //     final course = currentUser.courses[index];
-        //     return CourseInfo(
-        //       courseName: course.courseName,
-        //       courseInstructor: course.instructor,
-        //       startTime: course.startTime,
-        //       endTime: course.endTime,
-        //       daysOfWeek: course.daysOfWeek,
-        //     );
-        //   },
-        // ),
+        : BlocBuilder<GetCoursesBloc, GetCoursesState> (
+          builder: (context, state) {
+            if(state is GetCoursesSuccess){
+              _isLoading = false;
+              return ListView.builder(
+                itemCount: state.courses.length,
+                itemBuilder: (context, index) {
+                  final course = state.courses[index];
+                  return CourseInfo(
+                    courseName: course.courseName,
+                    courseInstructor: course.instructorId,
+                    startTime: course.startTime,
+                    endTime: course.endTime,
+                    daysOfWeek: course.daysOfWeek,
+                  );
+                },
+              );
+            } else if (state is GetCoursesInProgress){
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else{
+              return const Center(
+                child: Text('Failed to get courses'),
+                
+              );
+            }
+        }
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
