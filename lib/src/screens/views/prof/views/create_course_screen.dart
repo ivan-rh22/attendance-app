@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/components/my_text_field.dart';
 import 'package:attendance_app/src/screens/views/prof/views/select_coord_screen.dart';
@@ -18,6 +19,8 @@ class CreateCourseScreen extends StatefulWidget {
 class _CreateCourseScreenState extends State<CreateCourseScreen> {
   final _formKey = GlobalKey<FormState>();
   final courseNameController = TextEditingController();
+  final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
+  Set<Circle> circles = {};
   LatLng? classroomCoordinates;
   double? circleRadius;
   List<int> daysOfWeek = [];
@@ -26,6 +29,21 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
 
 
   bool courseCreationInProgress = false;
+
+  void _addCircle (LatLng point, double radius) {
+    setState(() {
+      circles.add(
+        Circle(
+          circleId: const CircleId('geofence'),
+          center: point,
+          radius: radius,
+          fillColor: Colors.amber.withOpacity(0.3),
+          strokeWidth: 2,
+          strokeColor: Colors.amber,
+        )
+      );
+    });
+  }
 
   void _resetData() {
   setState(() {
@@ -293,7 +311,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                         child: Column(
                           children: [
                             const Text(
-                              'Classroom Coordinates',
+                              'Classroom Geofence',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -303,22 +321,22 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                 indent: 20,
                                 endIndent: 20,
                                 color: Colors.grey[700]),
-                            Text(
-                              'Latitude: ${classroomCoordinates?.latitude}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                            ),
-                            Text(
-                              'Longitude: ${classroomCoordinates?.longitude}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                              ),
-                            ),
-                            Text(
-                              'Radius: $circleRadius',
-                              style: const TextStyle(
-                                fontSize: 20,
+                            circleRadius == null ? 
+                            const Text(
+                              "Missing",
+                              style: TextStyle(color: Colors.red),
+                            ) :
+                            SizedBox(
+                              height: 170, 
+                              width: MediaQuery.of(context).size.width,
+                              child: GoogleMap(
+                                mapType: MapType.hybrid,
+                                onMapCreated: ((GoogleMapController controller) => mapController.complete(controller)),
+                                initialCameraPosition: CameraPosition(
+                                  target: classroomCoordinates!,
+                                  zoom: 18,
+                                ),
+                                circles: circles,
                               ),
                             ),
                             ElevatedButton(
@@ -341,12 +359,13 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                     setState(() {
                                       classroomCoordinates = values[0];
                                       circleRadius = values[1];
+                                      _addCircle(classroomCoordinates!, circleRadius!);
                                     });
                                   }
                                 });
                               },
-                              child: const Center(
-                                child: Text('Select Coordinates'),
+                              child: Center(
+                                child: Text(circleRadius != null ? "Edit Geofence" : 'Create Geofence'),
                               ),
                             ),
                           ],
