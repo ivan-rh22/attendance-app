@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class ProfMap extends StatefulWidget {
   const ProfMap({super.key});
@@ -9,6 +11,10 @@ class ProfMap extends StatefulWidget {
 }
 
 class _ProfMapState extends State<ProfMap> {
+  final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>(); 
+  final Location locationController = Location();
+  LatLng? _currentPosp;
+  StreamSubscription<LocationData>? _locationSubscription;
   late GoogleMapController mapController;
   Set<Circle> circles = {};
   TextEditingController txtcontroller = TextEditingController();
@@ -30,7 +36,7 @@ class _ProfMapState extends State<ProfMap> {
         Circle(
           circleId: const CircleId('geofence'),
           center: point,
-          radius: _radius,
+          radius: radius,
           fillColor: Colors.amber.withOpacity(0.3),
           strokeWidth: 2,
           strokeColor: Colors.amber,
@@ -40,19 +46,27 @@ class _ProfMapState extends State<ProfMap> {
   }
 
   void _moveToLocation(LatLng location) {
-      mapController.animateCamera(CameraUpdate.newLatLng(location));
+    mapController.animateCamera(CameraUpdate.newLatLng(location));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getLocation();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
+      body: Stack(children: <Widget>[ 
+        _currentPosp == null ? 
+          const Center(child: CircularProgressIndicator()) : 
           GoogleMap( mapType: MapType.hybrid,
+            myLocationEnabled: true,
             onMapCreated: _onMapCreated,
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(26.3046, -98.1729),
-              zoom: 6,
+            initialCameraPosition: CameraPosition(
+              target: _currentPosp!,
+              zoom: 18,
             ),
             circles: circles,
             onTap: (LatLng point) {
@@ -82,7 +96,7 @@ class _ProfMapState extends State<ProfMap> {
                           controller: txtcontroller,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            hintText: 'Geofence Radius',
+                            hintText: 'Geofence Radius (20-100)',
                             border: InputBorder.none,
                           ),
                         ),
@@ -91,9 +105,19 @@ class _ProfMapState extends State<ProfMap> {
                     TextButton(
                       onPressed: (){
                         setState(() {
-                          double.parse(txtcontroller.text.toString()) < _radius ? smallercheck = true : smallercheck = false;
-                          _radius = double.parse(txtcontroller.text.toString());
-                          _addCircle(pointsave!, _radius, smallercheck);
+                          if(txtcontroller.text.toString().isNotEmpty){
+                            double tempRad = double.parse(txtcontroller.text.toString());
+                            if(tempRad < 20 || tempRad > 100) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Radius must be between 20 and 100')));
+                            } else {
+                              tempRad <= _radius ? smallercheck = true : smallercheck = false;
+                              _radius = tempRad;
+                              _addCircle(pointsave!, _radius, smallercheck);
+                            }
+                          }
+                          else {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid Input')));
+                          }
                         });
                       },
                       child: const Text('Confirm'),
@@ -120,7 +144,8 @@ class _ProfMapState extends State<ProfMap> {
                     ),
                     child: const Text('Finish', style: TextStyle(color: Colors.white),),
                     onPressed: () {
-                      
+                      print('juan here >>>>>>>>>>>>>>>>>>>>>>>${pointsave!.latitude}, ${pointsave!.longitude}');
+                      Navigator.pop(context, pointsave);
                     },
                   ),
                 ),
@@ -132,8 +157,48 @@ class _ProfMapState extends State<ProfMap> {
       ),
     );
   }
+
+    Future<void> getLocation() async {
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    serviceEnabled = await locationController.serviceEnabled();
+    if (serviceEnabled){
+      serviceEnabled = await locationController.requestService();
+    } else {
+      return Future.error("Location services disabled.");
+    }
+
+    permissionGranted = await locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await locationController.requestPermission();
+      if(permissionGranted != PermissionStatus.granted){
+        return Future.error("Location services disabled.");
+      }
+    }
+    await locationController.enableBackgroundMode(enable: true);
+    _locationSubscription = locationController.onLocationChanged.listen((LocationData currentLocation) {
+      if(currentLocation.latitude != null && currentLocation.longitude != null){
+        setState(() {
+          _currentPosp = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          _camToPos(_currentPosp!);
+        });
+      }
+    });
+  }
+
+  Future<void> _camToPos (LatLng pos) async {
+    final GoogleMapController controller = await _mapController.future;
+    CameraPosition newCameraPosition = CameraPosition(
+      target: pos, 
+      zoom: 18,
+    );
+    await controller.animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
+  }
+
   @override
   void dispose() {
+    _locationSubscription?.cancel();
     txtcontroller.dispose();
     super.dispose();
   }

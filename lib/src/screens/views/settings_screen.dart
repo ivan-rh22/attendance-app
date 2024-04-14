@@ -1,6 +1,6 @@
 // Settings screen (logout button found here)
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
-import 'package:attendance_app/src/screens/views/prof/views/temp_map_screen.dart';
+import 'package:attendance_app/src/screens/views/prof/views/select_coord_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
