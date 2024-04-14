@@ -1,5 +1,7 @@
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
 import 'package:attendance_app/src/screens/views/prof/blocs/create_course_bloc/bloc/create_course_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/blocs/get_courses_bloc/get_courses_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/blocs/navigators/course_navigator_observer.dart';
 import 'package:attendance_app/src/screens/views/prof/pcontroller.dart';
 import 'package:attendance_app/src/screens/views/stud/scontroller.dart';
 import 'package:course_repository/course_repository.dart';
@@ -26,6 +28,13 @@ class MyAppView extends StatelessWidget {
       child: MaterialApp(
           title: 'Auto Attendance',
           debugShowCheckedModeBanner: false,
+          navigatorObservers: [
+            ReloadCoursesObserver(context),
+          ],
+          routes: {
+            '/prof_home': (context) => const ProfControl(),
+            '/stud_home': (context) => const StudControl(),
+          },
           theme: ThemeData.from(
             colorScheme: ColorScheme.light(
               background: Colors.white,
@@ -78,6 +87,11 @@ class MyAppView extends StatelessWidget {
                       create: (context) => SignInBloc(
                         context.read<AuthenticationBloc>().userRepository,
                       ),
+                    ),
+                    BlocProvider(
+                      create:(context) => GetCoursesBloc(
+                        FirebaseCourseRepo()
+                      )..add(GetCourses(state.user!.userId)),
                     ),
                   ],
                   child: state.user!.isTeacher

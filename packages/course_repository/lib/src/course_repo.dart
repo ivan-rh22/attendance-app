@@ -2,7 +2,7 @@ import 'models/models.dart';
 
 
 abstract class CourseRepository {
-  Stream<Course?> get course;
+  Stream<List<Course>> courses(String userId);
 
   Future<Course> createCourse(Course course, String userId);
 
