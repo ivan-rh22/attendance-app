@@ -45,6 +45,15 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
     });
   }
 
+  Future<void> _camToPos (LatLng pos) async {
+    final GoogleMapController controller = await mapController.future;
+    CameraPosition newCameraPosition = CameraPosition(
+      target: pos, 
+      zoom: 18,
+    );
+    await controller.animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
+  }
+
   void _resetData() {
   setState(() {
     classroomCoordinates = null;
@@ -359,6 +368,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                     setState(() {
                                       classroomCoordinates = values[0];
                                       circleRadius = values[1];
+                                      _camToPos(classroomCoordinates!);
                                       _addCircle(classroomCoordinates!, circleRadius!);
                                     });
                                   }
