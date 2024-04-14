@@ -33,7 +33,7 @@ class CourseEntity {
       'daysOfWeek': daysOfWeek,
       'startTime': _timeOfDayToTimeStamp(startTime),
       'endTime': _timeOfDayToTimeStamp(endTime),
-      'classroomCoordinates': classroomCoordinates,
+      'classroomCoordinates': [classroomCoordinates!.latitude, classroomCoordinates!.longitude],
       'radius': circleRadius,
       'studentIds': studentIds,
     };
@@ -47,7 +47,7 @@ class CourseEntity {
       daysOfWeek: List<int>.from(json['daysOfWeek']),
       startTime: _timeStampToTimeOfDay(json['startTime']),
       endTime: _timeStampToTimeOfDay(json['endTime']),
-      classroomCoordinates: json['classroomCoordinates'],
+      classroomCoordinates: _coordinatesCalc(json['classroomCoordinates']),
       circleRadius: json['circleRadius'],
       studentIds: List<String>.from(json['studentIds']),
     );
@@ -62,5 +62,13 @@ class CourseEntity {
   static TimeOfDay _timeStampToTimeOfDay(Timestamp timestamp) {
     final date = timestamp.toDate();
     return TimeOfDay(hour: date.hour, minute: date.minute);
+  }
+
+  static LatLng _coordinatesCalc(dynamic data) {
+    if(data != null && data is List<dynamic> && data.length >= 2){
+      return LatLng(data[0], data[1]);
+    } else {
+      return const LatLng(0,0);
+    }
   }
 }

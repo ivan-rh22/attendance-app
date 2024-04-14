@@ -342,7 +342,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                 mapType: MapType.hybrid,
                                 onMapCreated: ((GoogleMapController controller) => mapController.complete(controller)),
                                 initialCameraPosition: CameraPosition(
-                                  target: classroomCoordinates!,
+                                  target: classroomCoordinates == null ? const LatLng(0, 0) : classroomCoordinates!,
                                   zoom: 18,
                                 ),
                                 circles: circles,
@@ -394,7 +394,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
             child: FloatingActionButton.extended(
               backgroundColor: Theme.of(context).colorScheme.primary,
               onPressed: () {
-                if(_formKey.currentState!.validate()){
+                if(_formKey.currentState!.validate() && classroomCoordinates?.latitude != null){
                   final course = Course.empty;
                   course.courseName = courseNameController.text;
                   course.daysOfWeek = daysOfWeek;
