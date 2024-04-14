@@ -10,6 +10,7 @@ class Course {
   TimeOfDay startTime;
   TimeOfDay endTime;
   LatLng? classroomCoordinates;
+  double? circleRadius;
   List<String> studentIds;
 
   Course({
@@ -20,6 +21,7 @@ class Course {
     required this.startTime,
     required this.endTime,
     required this.classroomCoordinates,
+    required this.circleRadius,
     List<String>? studentIds,
   }) : studentIds = studentIds ?? [];
 
@@ -31,6 +33,7 @@ class Course {
     startTime: const TimeOfDay(hour: 00, minute: 00),
     endTime: const TimeOfDay(hour: 00, minute: 00),
     classroomCoordinates: null,
+    circleRadius: null,
   );
 
   CourseEntity toEntity() {
@@ -42,6 +45,7 @@ class Course {
       startTime: startTime,
       endTime: endTime,
       classroomCoordinates: classroomCoordinates,
+      circleRadius: circleRadius,
       studentIds: studentIds,
     );
   }
@@ -55,12 +59,13 @@ class Course {
       startTime: entity.startTime,
       endTime: entity.endTime,
       classroomCoordinates: entity.classroomCoordinates,
+      circleRadius: entity.circleRadius,
       studentIds: entity.studentIds,
     );
   }
 
   @override
   String toString() {
-    return 'Course: $courseId, $courseName, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $studentIds';
+    return 'Course: $courseId, $courseName, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
   }
 }

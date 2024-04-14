@@ -144,8 +144,7 @@ class _ProfMapState extends State<ProfMap> {
                     ),
                     child: const Text('Finish', style: TextStyle(color: Colors.white),),
                     onPressed: () {
-                      print('juan here >>>>>>>>>>>>>>>>>>>>>>>${pointsave!.latitude}, ${pointsave!.longitude}');
-                      Navigator.pop(context, pointsave);
+                      Navigator.pop(context, [pointsave, _radius]);
                     },
                   ),
                 ),

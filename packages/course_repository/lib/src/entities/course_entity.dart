@@ -10,6 +10,7 @@ class CourseEntity {
   final TimeOfDay startTime;
   final TimeOfDay endTime;
   LatLng? classroomCoordinates;
+  double? circleRadius;
   List<String> studentIds;
 
   CourseEntity({
@@ -20,6 +21,7 @@ class CourseEntity {
     required this.startTime,
     required this.endTime,
     required this.classroomCoordinates,
+    required this.circleRadius,
     List<String>? studentIds,
   }) : studentIds = studentIds ?? [];
 
@@ -32,6 +34,7 @@ class CourseEntity {
       'startTime': _timeOfDayToTimeStamp(startTime),
       'endTime': _timeOfDayToTimeStamp(endTime),
       'classroomCoordinates': classroomCoordinates,
+      'radius': circleRadius,
       'studentIds': studentIds,
     };
   }
@@ -45,6 +48,7 @@ class CourseEntity {
       startTime: _timeStampToTimeOfDay(json['startTime']),
       endTime: _timeStampToTimeOfDay(json['endTime']),
       classroomCoordinates: json['classroomCoordinates'],
+      circleRadius: json['circleRadius'],
       studentIds: List<String>.from(json['studentIds']),
     );
   }

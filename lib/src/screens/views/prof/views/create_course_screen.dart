@@ -19,6 +19,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
   final _formKey = GlobalKey<FormState>();
   final courseNameController = TextEditingController();
   LatLng? classroomCoordinates;
+  double? circleRadius;
   List<int> daysOfWeek = [];
   TimeOfDay startTime = const TimeOfDay(hour: 00, minute: 00);
   TimeOfDay endTime = const TimeOfDay(hour: 00, minute: 00);
@@ -305,13 +306,19 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                             Text(
                               'Latitude: ${classroomCoordinates?.latitude}',
                               style: const TextStyle(
-                                fontSize: 30,
+                                fontSize: 20,
                               ),
                             ),
                             Text(
                               'Longitude: ${classroomCoordinates?.longitude}',
                               style: const TextStyle(
-                                fontSize: 30,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Text(
+                              'Radius: $circleRadius',
+                              style: const TextStyle(
+                                fontSize: 20,
                               ),
                             ),
                             ElevatedButton(
@@ -329,10 +336,11 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                                   MaterialPageRoute(
                                     builder: (context) => const ProfMap(),
                                   ),
-                                ).then((value) {
-                                  if (value != null) {
+                                ).then((dynamic values) {
+                                  if (values != null || values.length >= 2) {
                                     setState(() {
-                                      classroomCoordinates = value;
+                                      classroomCoordinates = values[0];
+                                      circleRadius = values[1];
                                     });
                                   }
                                 });
