@@ -16,7 +16,8 @@ class ProfHome extends StatefulWidget {
 class _ProfHomeState extends State<ProfHome> {
   late final MyUser currentUser;
   final ScrollController _scrollController = ScrollController();
-  bool _isLoading = false;
+  // TODO: Implement reload (pull to refresh)
+  // bool _isLoading = false;
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _ProfHomeState extends State<ProfHome> {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200.0 &&
         !_scrollController.position.outOfRange) {
       setState(() {
-        _isLoading = true;
+        // _isLoading = true;
       });
       
       context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
@@ -60,7 +61,7 @@ class _ProfHomeState extends State<ProfHome> {
         : BlocBuilder<GetCoursesBloc, GetCoursesState> (
           builder: (context, state) {
             if(state is GetCoursesSuccess){
-              _isLoading = false;
+              // _isLoading = false;
               return ListView.builder(
                 itemCount: state.courses.length,
                 itemBuilder: (context, index) {
