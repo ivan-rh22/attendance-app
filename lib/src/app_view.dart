@@ -1,6 +1,10 @@
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/blocs/create_course_bloc/bloc/create_course_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/blocs/get_courses_bloc/get_courses_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/blocs/navigators/course_navigator_observer.dart';
 import 'package:attendance_app/src/screens/views/prof/pcontroller.dart';
 import 'package:attendance_app/src/screens/views/stud/scontroller.dart';
+import 'package:course_repository/course_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:flutter/services.dart';
@@ -15,63 +19,90 @@ class MyAppView extends StatelessWidget {
     final brightness = MediaQuery.of(context).platformBrightness;
     final isDarkMode = brightness == Brightness.dark;
 
-    return MaterialApp(
-        title: 'Auto Attendance',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.from(
-        colorScheme: ColorScheme.light(
-          background: Colors.white,
-          onBackground: Colors.black,
-          primary: Colors.blue,
-          onPrimary: Colors.white,
-          primaryContainer: Colors.white,
-          onPrimaryContainer: Colors.blue.shade200,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CreateCourseBloc>(
+          create: (context) => CreateCourseBloc(FirebaseCourseRepo()),
         ),
-        textTheme: Typography.material2018().black.apply(
-          bodyColor: Colors.black,
-          displayColor: Colors.black,
-        ),
-      ).copyWith(
-        appBarTheme: const AppBarTheme(
-          color: Colors.white,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black), systemOverlayStyle: SystemUiOverlayStyle.dark,
-        ),
-      ),
-      darkTheme: ThemeData.from(
-        colorScheme: ColorScheme.dark(
-          background: Colors.black,
-          onBackground: Colors.white,
-          primary: Colors.blue,
-          onPrimary: Colors.white,
-          primaryContainer: Colors.grey.shade900,
-          onPrimaryContainer: Colors.grey.shade200,
-        ),
-        textTheme: Typography.material2018().white.apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white,
-        ),
-      ).copyWith(
-        appBarTheme: const AppBarTheme(
-          color: Colors.black,
-          elevation: 0,
-          iconTheme: IconThemeData(color: Colors.white), systemOverlayStyle: SystemUiOverlayStyle.light,
-        ),
-      ),
-      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-          builder: ((context, state) {
-            if (state.status == AuthenticationStatus.authenticated) {
-              return BlocProvider(
-                create: (context) => SignInBloc(
-                  context.read<AuthenticationBloc>().userRepository,
+      ],
+      child: MaterialApp(
+          title: 'Auto Attendance',
+          debugShowCheckedModeBanner: false,
+          navigatorObservers: [
+            ReloadCoursesObserver(context),
+          ],
+          routes: {
+            '/prof_home': (context) => const ProfControl(),
+            '/stud_home': (context) => const StudControl(),
+          },
+          theme: ThemeData.from(
+            colorScheme: ColorScheme.light(
+              background: Colors.white,
+              onBackground: Colors.black,
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              primaryContainer: Colors.white,
+              onPrimaryContainer: Colors.blue.shade200,
+            ),
+            textTheme: Typography.material2018().black.apply(
+                  bodyColor: Colors.black,
+                  displayColor: Colors.black,
                 ),
-                child: state.user!.isTeacher ? const ProfControl() : const StudControl(),
-              );
-            } else {
-              return const WelcomeScreen();
-            }
-          }),
-        ));
+          ).copyWith(
+            appBarTheme: const AppBarTheme(
+              color: Colors.white,
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.black),
+              systemOverlayStyle: SystemUiOverlayStyle.dark,
+            ),
+          ),
+          darkTheme: ThemeData.from(
+            colorScheme: ColorScheme.dark(
+              background: Colors.black,
+              onBackground: Colors.white,
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              primaryContainer: Colors.grey.shade900,
+              onPrimaryContainer: Colors.grey.shade200,
+            ),
+            textTheme: Typography.material2018().white.apply(
+                  bodyColor: Colors.white,
+                  displayColor: Colors.white,
+                ),
+          ).copyWith(
+            appBarTheme: const AppBarTheme(
+              color: Colors.black,
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.white),
+              systemOverlayStyle: SystemUiOverlayStyle.light,
+            ),
+          ),
+          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: ((context, state) {
+              if (state.status == AuthenticationStatus.authenticated) {
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (context) => SignInBloc(
+                        context.read<AuthenticationBloc>().userRepository,
+                      ),
+                    ),
+                    BlocProvider(
+                      create:(context) => GetCoursesBloc(
+                        FirebaseCourseRepo()
+                      )..add(GetCourses(state.user!.userId)),
+                    ),
+                  ],
+                  child: state.user!.isTeacher
+                      ? const ProfControl()
+                      : const StudControl(),
+                );
+              } else {
+                return const WelcomeScreen();
+              }
+            }),
+          )),
+    );
   }
 }

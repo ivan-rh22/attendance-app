@@ -35,22 +35,15 @@ class _StudentHomeState extends State<StudentHome> {
           child: _currentPos == null ? 
           const Center(child: CircularProgressIndicator()) : 
           GoogleMap(
+            myLocationEnabled: true,
             onMapCreated: ((GoogleMapController controller) => _mapController.complete(controller)), mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
               target: _currentPos!,
               zoom: 18),
               zoomControlsEnabled: false, 
               zoomGesturesEnabled: false,
-            circles: {
-              if (_currentPos != null)
-                Circle(circleId: const CircleId("userCircle"),
-                center: _currentPos!,
-                radius: 5,
-                strokeColor: Colors.white,
-                fillColor: Colors.blue,
-                strokeWidth: 3,
-                )
-            } 
+              scrollGesturesEnabled: false,
+              rotateGesturesEnabled: false,
           )
         ),
         Positioned(

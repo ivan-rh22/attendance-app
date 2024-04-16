@@ -4,40 +4,48 @@ import '../entities/entities.dart';
 
 class Course {
   String courseId;
+  String courseName;
   String instructorId;
   List<int> daysOfWeek;
   TimeOfDay startTime;
   TimeOfDay endTime;
   LatLng? classroomCoordinates;
+  double? circleRadius;
   List<String> studentIds;
 
   Course({
     required this.courseId,
+    required this.courseName,
     required this.instructorId,
     required this.daysOfWeek,
     required this.startTime,
     required this.endTime,
     required this.classroomCoordinates,
+    required this.circleRadius,
     List<String>? studentIds,
   }) : studentIds = studentIds ?? [];
 
   static final empty = Course(
     courseId: '',
+    courseName: '',
     instructorId: '',
     daysOfWeek: [],
-    startTime: const TimeOfDay(hour: 0, minute: 0),
-    endTime: const TimeOfDay(hour: 0, minute: 0),
+    startTime: const TimeOfDay(hour: 00, minute: 00),
+    endTime: const TimeOfDay(hour: 00, minute: 00),
     classroomCoordinates: null,
+    circleRadius: null,
   );
 
   CourseEntity toEntity() {
     return CourseEntity(
       courseId: courseId,
+      courseName: courseName,
       instructorId: instructorId,
       daysOfWeek: daysOfWeek,
       startTime: startTime,
       endTime: endTime,
       classroomCoordinates: classroomCoordinates,
+      circleRadius: circleRadius,
       studentIds: studentIds,
     );
   }
@@ -45,17 +53,19 @@ class Course {
   static Course fromEntity(CourseEntity entity) {
     return Course(
       courseId: entity.courseId,
+      courseName: entity.courseName,
       instructorId: entity.instructorId,
       daysOfWeek: entity.daysOfWeek,
       startTime: entity.startTime,
       endTime: entity.endTime,
       classroomCoordinates: entity.classroomCoordinates,
+      circleRadius: entity.circleRadius,
       studentIds: entity.studentIds,
     );
   }
 
   @override
   String toString() {
-    return 'Course: $courseId, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $studentIds';
+    return 'Course: $courseId, $courseName, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
   }
 }
