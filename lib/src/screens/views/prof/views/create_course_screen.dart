@@ -394,7 +394,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
             child: FloatingActionButton.extended(
               backgroundColor: Theme.of(context).colorScheme.primary,
               onPressed: () {
-                if(_formKey.currentState!.validate() && classroomCoordinates?.latitude != null){
+                if(_formKey.currentState!.validate() && classroomCoordinates?.latitude != null || classroomCoordinates?.longitude != null){
                   final course = Course.empty;
                   course.courseName = courseNameController.text;
                   course.daysOfWeek = daysOfWeek;

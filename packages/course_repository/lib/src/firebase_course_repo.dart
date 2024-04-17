@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:course_repository/course_repository.dart';
+import 'package:random_x/random_x.dart';
 
 
 class FirebaseCourseRepo implements CourseRepository {
@@ -29,6 +30,22 @@ class FirebaseCourseRepo implements CourseRepository {
     }
   }
 
+  Stream<Course> courseStream(String courseId) {
+    try {
+      return coursesCollection.doc(courseId).snapshots().map((snapshot) {
+        if(snapshot.exists){
+          return Course.fromEntity(CourseEntity.fromJson(snapshot.data()!));
+        }
+        else {
+          throw Exception('Course not found');
+        }
+      });
+    } catch (e) {
+      log('Error getting course stream: ${e.toString()}');
+      rethrow;
+    }
+  }
+
   @override
   Future<Course> createCourse(Course course, String userId) async {
     try {
@@ -37,6 +54,8 @@ class FirebaseCourseRepo implements CourseRepository {
       if(userData != null && userData['isTeacher'] == true){
         // add instructorId to course
         course.instructorId = userId;
+        // generate access token
+        course.accessToken = RndX.randomString(type: RandomCharStringType.alphaNumerical, length: 10).toUpperCase();
 
         final documentReference = await coursesCollection.add(course.toEntity().toJson());
 

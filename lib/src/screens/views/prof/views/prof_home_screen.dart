@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
+import 'course_details_screen.dart';
 import 'create_course_screen.dart';
 
 class ProfHome extends StatefulWidget {
@@ -67,6 +68,7 @@ class _ProfHomeState extends State<ProfHome> {
                 itemBuilder: (context, index) {
                   final course = state.courses[index];
                   return CourseInfo(
+                    courseId: course.courseId,
                     courseName: course.courseName,
                     courseInstructor: course.instructorId,
                     startTime: course.startTime,
@@ -103,6 +105,7 @@ class _ProfHomeState extends State<ProfHome> {
 }
 
 class CourseInfo extends StatelessWidget {
+  final String courseId;
   final String courseName;
   final String courseInstructor;
   final TimeOfDay startTime;
@@ -110,6 +113,7 @@ class CourseInfo extends StatelessWidget {
   final List<int> daysOfWeek;
 
   const CourseInfo({super.key, 
+    required this.courseId,
     required this.courseName,
     required this.courseInstructor,
     this.startTime = const TimeOfDay(hour: 10, minute: 20),
@@ -119,62 +123,69 @@ class CourseInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 1.5,
-      margin: const EdgeInsets.all(10),
-      color: Theme.of(context).colorScheme.primaryContainer,
-      child: Column(
-        children: [
-          ListTile(
-            title: Text(courseName, 
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              )
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => CourseDetailsScreen(courseId: courseId))
+        );
+      },
+      child: Card(
+        elevation: 1.5,
+        margin: const EdgeInsets.all(10),
+        color: Theme.of(context).colorScheme.primaryContainer,
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(courseName, 
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                )
+              ),
+              subtitle: Text(courseInstructor, 
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  fontSize: 16,
+                )
+              ),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('${startTime.format(context)} - ${endTime.format(context)}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    )
+                  ),
+                  Text(daysOfWeek.map((day) {
+                    switch (day) {
+                      case 1:
+                        return 'Mon';
+                      case 2:
+                        return 'Tue';
+                      case 3:
+                        return 'Wed';
+                      case 4:
+                        return 'Thu';
+                      case 5:
+                        return 'Fri';
+                      case 6:
+                        return 'Sat';
+                      case 7:
+                        return 'Sun';
+                      default:
+                        return '';
+                    }
+                  }).join(', '),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    )
+                  ),
+                ],
+              ),
             ),
-            subtitle: Text(courseInstructor, 
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                fontSize: 16,
-              )
-            ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('${startTime.format(context)} - ${endTime.format(context)}',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  )
-                ),
-                Text(daysOfWeek.map((day) {
-                  switch (day) {
-                    case 1:
-                      return 'Mon';
-                    case 2:
-                      return 'Tue';
-                    case 3:
-                      return 'Wed';
-                    case 4:
-                      return 'Thu';
-                    case 5:
-                      return 'Fri';
-                    case 6:
-                      return 'Sat';
-                    case 7:
-                      return 'Sun';
-                    default:
-                      return '';
-                  }
-                }).join(', '),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  )
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

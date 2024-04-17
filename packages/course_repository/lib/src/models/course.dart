@@ -4,6 +4,7 @@ import '../entities/entities.dart';
 
 class Course {
   String courseId;
+  String accessToken;
   String courseName;
   String instructorId;
   List<int> daysOfWeek;
@@ -15,6 +16,7 @@ class Course {
 
   Course({
     required this.courseId,
+    required this.accessToken,
     required this.courseName,
     required this.instructorId,
     required this.daysOfWeek,
@@ -27,6 +29,7 @@ class Course {
 
   static final empty = Course(
     courseId: '',
+    accessToken: '',
     courseName: '',
     instructorId: '',
     daysOfWeek: [],
@@ -39,6 +42,7 @@ class Course {
   CourseEntity toEntity() {
     return CourseEntity(
       courseId: courseId,
+      accessToken: accessToken,
       courseName: courseName,
       instructorId: instructorId,
       daysOfWeek: daysOfWeek,
@@ -53,6 +57,7 @@ class Course {
   static Course fromEntity(CourseEntity entity) {
     return Course(
       courseId: entity.courseId,
+      accessToken: entity.accessToken,
       courseName: entity.courseName,
       instructorId: entity.instructorId,
       daysOfWeek: entity.daysOfWeek,

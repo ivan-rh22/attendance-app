@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CourseEntity {
   String courseId;
+  String accessToken;
   String courseName;
   String instructorId;
   List<int> daysOfWeek;
@@ -15,6 +16,7 @@ class CourseEntity {
 
   CourseEntity({
     required this.courseId,
+    required this.accessToken,
     required this.courseName,
     required this.instructorId,
     required this.daysOfWeek,
@@ -28,6 +30,7 @@ class CourseEntity {
   Map<String, Object?> toJson() {
     return {
       'courseId': courseId,
+      'accessToken': accessToken,
       'courseName': courseName,
       'instructorId': instructorId,
       'daysOfWeek': daysOfWeek,
@@ -42,6 +45,7 @@ class CourseEntity {
   static CourseEntity fromJson(Map<String, dynamic> json) {
     return CourseEntity(
       courseId: json['courseId'],
+      accessToken: json['accessToken'],
       courseName: json['courseName'],
       instructorId: json['instructorId'],
       daysOfWeek: List<int>.from(json['daysOfWeek']),
