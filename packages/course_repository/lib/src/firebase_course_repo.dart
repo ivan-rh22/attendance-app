@@ -98,7 +98,7 @@ class FirebaseCourseRepo implements CourseRepository {
         final course = courseSnapshot.docs.first;
         final courseData = course.data();
         final courseId = course.id;
-        final List<dynamic> students = courseData['students'] ?? [];
+        final List<dynamic> students = courseData['studentIds'] ?? [];
 
         if(students.contains(userId)){
           throw Exception('User already joined course');
@@ -113,7 +113,7 @@ class FirebaseCourseRepo implements CourseRepository {
         courses.add(courseId);
         await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
         
-        return coursesCollection.doc(courseId).update({'students': students});
+        return coursesCollection.doc(courseId).update({'studentIds': students});
       }
       else {
         throw Exception('Course not found');
