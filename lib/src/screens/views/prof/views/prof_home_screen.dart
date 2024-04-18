@@ -1,5 +1,5 @@
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:attendance_app/src/screens/views/prof/blocs/get_courses_bloc/get_courses_bloc.dart';
+import 'package:attendance_app/src/blocs/get_courses_bloc/get_courses_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
@@ -50,10 +50,11 @@ class _ProfHomeState extends State<ProfHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text('Courses',
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-          centerTitle: true,
+        title: const Text('Courses'),
+        centerTitle: true,
+        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+        elevation: 1,
+        shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       ),
       body: currentUser.courses.isEmpty
         ? const Center(
@@ -70,7 +71,7 @@ class _ProfHomeState extends State<ProfHome> {
                   return CourseInfo(
                     courseId: course.courseId,
                     courseName: course.courseName,
-                    courseInstructor: course.instructorId,
+                    roomNumber: course.roomNumber,
                     startTime: course.startTime,
                     endTime: course.endTime,
                     daysOfWeek: course.daysOfWeek,
@@ -81,7 +82,7 @@ class _ProfHomeState extends State<ProfHome> {
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            } else{
+            } else {
               return const Center(
                 child: Text('Failed to get courses'),
                 
@@ -98,6 +99,7 @@ class _ProfHomeState extends State<ProfHome> {
             ),
           );
         },
+        tooltip: 'Create Course',
         child: const Icon(Icons.add),
       ),
     );
@@ -107,7 +109,7 @@ class _ProfHomeState extends State<ProfHome> {
 class CourseInfo extends StatelessWidget {
   final String courseId;
   final String courseName;
-  final String courseInstructor;
+  final String roomNumber;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
   final List<int> daysOfWeek;
@@ -115,7 +117,7 @@ class CourseInfo extends StatelessWidget {
   const CourseInfo({super.key, 
     required this.courseId,
     required this.courseName,
-    required this.courseInstructor,
+    required this.roomNumber,
     this.startTime = const TimeOfDay(hour: 10, minute: 20),
     this.endTime = const TimeOfDay(hour: 11, minute: 0),
     this.daysOfWeek = const [1, 3, 5]
@@ -140,14 +142,20 @@ class CourseInfo extends StatelessWidget {
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.bold,
-                  fontSize: 20,
+                  fontSize: 24,
                 )
               ),
-              subtitle: Text(courseInstructor, 
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  fontSize: 16,
-                )
+              subtitle: Row(
+                children: [
+                  Icon(Icons.location_on, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                  const SizedBox(width: 5,),
+                  Text(roomNumber,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    )
+                  ),
+                ],
               ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -155,6 +163,7 @@ class CourseInfo extends StatelessWidget {
                   Text('${startTime.format(context)} - ${endTime.format(context)}',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontSize: 14,
                     )
                   ),
                   Text(daysOfWeek.map((day) {
@@ -179,6 +188,7 @@ class CourseInfo extends StatelessWidget {
                   }).join(', '),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontSize: 14,
                     )
                   ),
                 ],

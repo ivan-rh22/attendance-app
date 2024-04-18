@@ -1,14 +1,15 @@
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
 import 'package:attendance_app/src/screens/views/prof/blocs/create_course_bloc/bloc/create_course_bloc.dart';
-import 'package:attendance_app/src/screens/views/prof/blocs/get_courses_bloc/get_courses_bloc.dart';
 import 'package:attendance_app/src/screens/views/prof/blocs/navigators/course_navigator_observer.dart';
 import 'package:attendance_app/src/screens/views/prof/pcontroller.dart';
+import 'package:attendance_app/src/screens/views/stud/blocs/join_course_bloc/join_course_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/scontroller.dart';
 import 'package:course_repository/course_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'blocs/get_courses_bloc/get_courses_bloc.dart';
 import 'screens/auth/views/welcome_screen.dart';
 
 class MyAppView extends StatelessWidget {
@@ -23,6 +24,9 @@ class MyAppView extends StatelessWidget {
       providers: [
         BlocProvider<CreateCourseBloc>(
           create: (context) => CreateCourseBloc(FirebaseCourseRepo()),
+        ),
+        BlocProvider<JoinCourseBloc>(
+          create: (context) => JoinCourseBloc(FirebaseCourseRepo()),
         ),
       ],
       child: MaterialApp(

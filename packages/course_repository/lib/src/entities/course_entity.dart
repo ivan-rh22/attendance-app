@@ -6,6 +6,7 @@ class CourseEntity {
   String courseId;
   String accessToken;
   String courseName;
+  String roomNumber;
   String instructorId;
   List<int> daysOfWeek;
   final TimeOfDay startTime;
@@ -18,6 +19,7 @@ class CourseEntity {
     required this.courseId,
     required this.accessToken,
     required this.courseName,
+    required this.roomNumber,
     required this.instructorId,
     required this.daysOfWeek,
     required this.startTime,
@@ -32,6 +34,7 @@ class CourseEntity {
       'courseId': courseId,
       'accessToken': accessToken,
       'courseName': courseName,
+      'roomNumber': roomNumber,
       'instructorId': instructorId,
       'daysOfWeek': daysOfWeek,
       'startTime': _timeOfDayToTimeStamp(startTime),
@@ -47,6 +50,7 @@ class CourseEntity {
       courseId: json['courseId'],
       accessToken: json['accessToken'],
       courseName: json['courseName'],
+      roomNumber: json['roomNumber'],
       instructorId: json['instructorId'],
       daysOfWeek: List<int>.from(json['daysOfWeek']),
       startTime: _timeStampToTimeOfDay(json['startTime']),

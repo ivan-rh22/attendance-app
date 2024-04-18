@@ -6,6 +6,7 @@ class Course {
   String courseId;
   String accessToken;
   String courseName;
+  String roomNumber;
   String instructorId;
   List<int> daysOfWeek;
   TimeOfDay startTime;
@@ -18,6 +19,7 @@ class Course {
     required this.courseId,
     required this.accessToken,
     required this.courseName,
+    required this.roomNumber,
     required this.instructorId,
     required this.daysOfWeek,
     required this.startTime,
@@ -31,6 +33,7 @@ class Course {
     courseId: '',
     accessToken: '',
     courseName: '',
+    roomNumber: '',
     instructorId: '',
     daysOfWeek: [],
     startTime: const TimeOfDay(hour: 00, minute: 00),
@@ -44,6 +47,7 @@ class Course {
       courseId: courseId,
       accessToken: accessToken,
       courseName: courseName,
+      roomNumber: roomNumber,
       instructorId: instructorId,
       daysOfWeek: daysOfWeek,
       startTime: startTime,
@@ -59,6 +63,7 @@ class Course {
       courseId: entity.courseId,
       accessToken: entity.accessToken,
       courseName: entity.courseName,
+      roomNumber: entity.roomNumber,
       instructorId: entity.instructorId,
       daysOfWeek: entity.daysOfWeek,
       startTime: entity.startTime,
@@ -71,6 +76,6 @@ class Course {
 
   @override
   String toString() {
-    return 'Course: $courseId, $courseName, $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
+    return 'Course: $courseId, $courseName, $accessToken, $roomNumber $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
   }
 }

@@ -89,10 +89,35 @@ class FirebaseCourseRepo implements CourseRepository {
   }
 
   @override
-  Future<void> joinCourse(String courseId) {
+  Future<void> joinCourse(String accessKey, String userId) async {
     try{
-      // TODO: implement joinCourse
-      return Future.value();
+      // get the course with the access key
+      final courseSnapshot = await coursesCollection.where('accessToken', isEqualTo: accessKey).get();
+      if(courseSnapshot.docs.isNotEmpty){
+        // add the user to the course's students list
+        final course = courseSnapshot.docs.first;
+        final courseData = course.data();
+        final courseId = course.id;
+        final List<dynamic> students = courseData['students'] ?? [];
+
+        if(students.contains(userId)){
+          throw Exception('User already joined course');
+        }
+
+        students.add(userId);
+
+        // add the course to the user's courses list
+        final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        final userData = userSnapshot.data();
+        final List<dynamic> courses = userData?['courses'] ?? [];
+        courses.add(courseId);
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
+        
+        return coursesCollection.doc(courseId).update({'students': students});
+      }
+      else {
+        throw Exception('Course not found');
+      }
     } catch(e) {
       log('Error joining course: ${e.toString()}');
       rethrow;

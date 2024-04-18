@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../blocs/authentication_bloc/authentication_bloc.dart';
-import '../get_courses_bloc/get_courses_bloc.dart';
+import '../../../../../blocs/get_courses_bloc/get_courses_bloc.dart';
 
 class ReloadCoursesObserver extends NavigatorObserver {
   final BuildContext context;

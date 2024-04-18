@@ -24,6 +24,24 @@ class FirebaseUserRepo implements UserRepository{
     });
   }
 
+  Future<MyUser> getUser(String userId) {
+    try {
+      return usersCollection
+      .doc(userId)
+      .get()
+      .then((snapshot) { 
+        if(snapshot.exists) {
+          return MyUser.fromEntity(MyUserEntity.fromJson(snapshot.data()!));
+        } else {
+          throw Exception('User not found');
+        }
+      });
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
   @override
   Future<void> signIn(String email, String password) async {
     try{
