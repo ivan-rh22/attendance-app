@@ -18,8 +18,12 @@ class FirebaseCourseRepo implements CourseRepository {
       final userData = userSnapshot.data();
       if(userData != null){
         final List<dynamic> courses = userData['courses'] ?? [];
-        final courseSnapshots = await coursesCollection.where(FieldPath.documentId, whereIn: courses).get();
-        yield courseSnapshots.docs.map((doc) => Course.fromEntity(CourseEntity.fromJson(doc.data()))).toList();
+        if(courses.isNotEmpty){
+          final courseSnapshots = await coursesCollection.where(FieldPath.documentId, whereIn: courses).get();
+          yield courseSnapshots.docs.map((doc) => Course.fromEntity(CourseEntity.fromJson(doc.data()))).toList();
+        } else {
+          yield [];
+        }
       }
       else {
         throw Exception('User not found');
@@ -49,11 +53,13 @@ class FirebaseCourseRepo implements CourseRepository {
   @override
   Future<Course> createCourse(Course course, String userId) async {
     try {
-      final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final userSnapshot = await userRef.get();
       final userData = userSnapshot.data();
+
       if(userData != null && userData['isTeacher'] == true){
-        // add instructorId to course
-        course.instructorId = userId;
+        // add instructor reference to course
+        course.instructorReference = userSnapshot.reference;
         // generate access token
         course.accessToken = RndX.randomString(type: RandomCharStringType.alphaNumerical, length: 10).toUpperCase();
 

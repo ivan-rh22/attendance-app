@@ -73,8 +73,65 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                         title: const Text('End Time'),
                         subtitle: Text(course?.endTime.format(context) ?? ''),
                       ),
+                      ListTile(
+                        title: const Text('Class Code'),
+                        subtitle: Text(course?.accessToken ?? ''),
+                      )
                     ],
                   ),
+                ),
+                Card(
+                  margin: const EdgeInsets.all(10),
+                  child: StreamBuilder(
+                    stream: course?.instructorReference.snapshots(),
+                    builder:(context, snapshot) {
+                      if(snapshot.hasData){
+                        final instructorData = snapshot.data?.data() as Map<String, dynamic>;
+                        final instructorName = (instructorData)['name'] ?? 'Instructor Not Found';
+                        final instructorEmail = (instructorData)['email'] ?? 'Instructor Not Found'; 
+                        return Column(
+                          children: [
+                            const Text('Instructor Details', 
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const Divider(indent: 30, endIndent: 30),
+                            ListTile(
+                              title: const Text('Name:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(instructorName),
+                            ), 
+                            ListTile(
+                              title: const Text('Email:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(instructorEmail),
+                            ),
+                          ],
+                        );
+                      }
+                      else if(snapshot.hasError){
+                        return const Text('Failed to get instructor details');
+                      }
+                      else {
+                        return const Center(
+                          child: Column(
+                            children: [
+                              CircularProgressIndicator(),
+                              Text('Loading instructor details'),
+                            ]
+                          ),
+                        );
+                      }
+                    },
+                  )
                 ),
                 const Text('Students', 
                   style: TextStyle(

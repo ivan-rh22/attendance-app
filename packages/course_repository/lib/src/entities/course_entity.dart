@@ -7,7 +7,7 @@ class CourseEntity {
   String accessToken;
   String courseName;
   String roomNumber;
-  String instructorId;
+  DocumentReference instructorReference;
   List<int> daysOfWeek;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
@@ -20,7 +20,7 @@ class CourseEntity {
     required this.accessToken,
     required this.courseName,
     required this.roomNumber,
-    required this.instructorId,
+    required this.instructorReference,
     required this.daysOfWeek,
     required this.startTime,
     required this.endTime,
@@ -35,7 +35,7 @@ class CourseEntity {
       'accessToken': accessToken,
       'courseName': courseName,
       'roomNumber': roomNumber,
-      'instructorId': instructorId,
+      'instructorReference': instructorReference,
       'daysOfWeek': daysOfWeek,
       'startTime': _timeOfDayToTimeStamp(startTime),
       'endTime': _timeOfDayToTimeStamp(endTime),
@@ -51,7 +51,7 @@ class CourseEntity {
       accessToken: json['accessToken'],
       courseName: json['courseName'],
       roomNumber: json['roomNumber'],
-      instructorId: json['instructorId'],
+      instructorReference: json['instructorReference'],
       daysOfWeek: List<int>.from(json['daysOfWeek']),
       startTime: _timeStampToTimeOfDay(json['startTime']),
       endTime: _timeStampToTimeOfDay(json['endTime']),

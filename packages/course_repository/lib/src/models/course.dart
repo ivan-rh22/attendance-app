@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../entities/entities.dart';
@@ -7,7 +8,7 @@ class Course {
   String accessToken;
   String courseName;
   String roomNumber;
-  String instructorId;
+  DocumentReference instructorReference;
   List<int> daysOfWeek;
   TimeOfDay startTime;
   TimeOfDay endTime;
@@ -20,7 +21,7 @@ class Course {
     required this.accessToken,
     required this.courseName,
     required this.roomNumber,
-    required this.instructorId,
+    required this.instructorReference,
     required this.daysOfWeek,
     required this.startTime,
     required this.endTime,
@@ -34,7 +35,7 @@ class Course {
     accessToken: '',
     courseName: '',
     roomNumber: '',
-    instructorId: '',
+    instructorReference: FirebaseFirestore.instance.doc('users/nonexistent'),
     daysOfWeek: [],
     startTime: const TimeOfDay(hour: 00, minute: 00),
     endTime: const TimeOfDay(hour: 00, minute: 00),
@@ -48,7 +49,7 @@ class Course {
       accessToken: accessToken,
       courseName: courseName,
       roomNumber: roomNumber,
-      instructorId: instructorId,
+      instructorReference: instructorReference,
       daysOfWeek: daysOfWeek,
       startTime: startTime,
       endTime: endTime,
@@ -64,7 +65,7 @@ class Course {
       accessToken: entity.accessToken,
       courseName: entity.courseName,
       roomNumber: entity.roomNumber,
-      instructorId: entity.instructorId,
+      instructorReference: entity.instructorReference,
       daysOfWeek: entity.daysOfWeek,
       startTime: entity.startTime,
       endTime: entity.endTime,
@@ -76,6 +77,6 @@ class Course {
 
   @override
   String toString() {
-    return 'Course: $courseId, $courseName, $accessToken, $roomNumber $instructorId, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
+    return 'Course: $courseId, $courseName, $accessToken, $roomNumber $instructorReference, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
   }
 }
