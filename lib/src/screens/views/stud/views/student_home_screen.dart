@@ -1,5 +1,6 @@
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/blocs/get_courses_bloc/get_courses_bloc.dart';
+import 'package:attendance_app/src/screens/views/stud/views/course_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
@@ -68,7 +69,6 @@ class _StudentHomeState extends State<StudentHome> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            // call the join course screen as a dialog
             showDialog(
               context: context,
               builder: (context) {
@@ -82,6 +82,7 @@ class _StudentHomeState extends State<StudentHome> {
     );
   }
 }
+
 class CourseInfo extends StatelessWidget {
   final String courseId;
   final String courseName;
@@ -103,7 +104,9 @@ class CourseInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: Navigate to course details screen for students
+        Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => StudCourseDetailsScreen(courseId: courseId))
+        );
       },
       child: Card(
         elevation: 1.5,

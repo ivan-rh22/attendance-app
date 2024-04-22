@@ -1,18 +1,17 @@
-import 'package:flutter/cupertino.dart';
+import 'package:attendance_app/src/screens/views/stud/views/clock_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import '../../../../blocs/get_course_bloc/get_course_bloc.dart';
 
-class CourseDetailsScreen extends StatefulWidget {
+class StudCourseDetailsScreen extends StatefulWidget {
   final String courseId;
-  const CourseDetailsScreen({super.key, required this.courseId});
+  const StudCourseDetailsScreen({super.key, required this.courseId});
 
   @override
-  State<CourseDetailsScreen> createState() => _CourseDetailsScreenState();
+  State<StudCourseDetailsScreen> createState() => _StudCourseDetailsScreenState();
 }
 
-class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
+class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
   final _bloc = GetCourseBloc();
 
   @override
@@ -183,48 +182,16 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                     },
                   )
                 ),
-                const Text('Students', 
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Divider(indent: 20, endIndent: 20),
-                Expanded(
-                  child: course?.students.isEmpty ?? true
-                    ? const Center(
-                      child: Text('No students in this course'),
-                    )
-                    : ListView.builder(
-                      itemCount: course?.students.length,
-                      itemBuilder: (context, index) {
-                        return StreamBuilder(
-                          stream: course?.students[index].snapshots(), 
-                          builder: ((context, snapshot) {
-                            if(snapshot.hasData){
-                              final studentData = snapshot.data?.data() as Map<String, dynamic>;
-                              final studentName = (studentData)['name'] ?? 'Student Not Found';
-                              return Student(studentName: studentName);
-                            }
-                            else if(snapshot.hasError){
-                              return const Text('Failed to get student details');
-                            }
-                            else {
-                              return const Center(
-                                child: Column(
-                                  children: [
-                                    CircularProgressIndicator(),
-                                    Text('Loading student details'),
-                                  ]
-                                ),
-                              );
-                            }
-                          }),
-                        );
-                      },
-                    ),
-                ),
               ],
+            ),
+            floatingActionButton: FloatingActionButton.extended(
+              label: const Text('Clock In'),
+              onPressed: () {
+                Navigator.push(context, 
+                  MaterialPageRoute(builder: (context) => ClockInScreen())
+                );
+              },
+              tooltip: 'Clock In',
             ),
           );
         } else if(snapshot.hasError){
@@ -237,27 +204,6 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
           );
         }
       }
-    );
-  }
-}
-
-class Student extends StatelessWidget {
-  final String studentName;
-
-  const Student({
-    super.key,
-    required this.studentName,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      // TODO: Replace with student profile picture
-      leading: const Icon(Icons.person),
-      title: Text(studentName),
-      onTap: () {
-        // TODO: Navigate to student details screen
-      },
     );
   }
 }

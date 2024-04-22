@@ -423,6 +423,7 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                   course.startTime = startTime;
                   course.endTime = endTime;
                   course.classroomCoordinates = classroomCoordinates;
+                  course.circleRadius = circleRadius;
 
                   setState(() {
                     context.read<CreateCourseBloc>().add(CreateCourse(course,context.read<AuthenticationBloc>().state.user!.userId));
