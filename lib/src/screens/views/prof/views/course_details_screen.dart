@@ -141,15 +141,19 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 ),
                 const Divider(indent: 20, endIndent: 20),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: course?.studentIds.length,
-                    itemBuilder: (context, index) {
-                      final student = course?.studentIds[index];
-                      return Student(
-                        studentName: student!,
-                      );
-                    },
-                  ),
+                  child: course?.students.isEmpty ?? true
+                    ? const Center(
+                      child: Text('No students in this course'),
+                    )
+                    : ListView.builder(
+                      itemCount: course?.students.length,
+                      itemBuilder: (context, index) {
+                        final studentId = course?.students[index];
+                        return const Center(
+                          child: Text('Loading student details'),
+                        );
+                      },
+                    ),
                 ),
               ],
             ),

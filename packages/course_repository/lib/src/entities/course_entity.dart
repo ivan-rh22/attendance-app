@@ -13,7 +13,7 @@ class CourseEntity {
   final TimeOfDay endTime;
   LatLng? classroomCoordinates;
   double? circleRadius;
-  List<String> studentIds;
+  List<DocumentReference> students;
 
   CourseEntity({
     required this.courseId,
@@ -26,8 +26,8 @@ class CourseEntity {
     required this.endTime,
     required this.classroomCoordinates,
     required this.circleRadius,
-    List<String>? studentIds,
-  }) : studentIds = studentIds ?? [];
+    List<DocumentReference>? students,
+  }) : students = students ?? [];
 
   Map<String, Object?> toJson() {
     return {
@@ -41,7 +41,7 @@ class CourseEntity {
       'endTime': _timeOfDayToTimeStamp(endTime),
       'classroomCoordinates': [classroomCoordinates!.latitude, classroomCoordinates!.longitude],
       'radius': circleRadius,
-      'studentIds': studentIds,
+      'students': students,
     };
   }
 
@@ -57,7 +57,7 @@ class CourseEntity {
       endTime: _timeStampToTimeOfDay(json['endTime']),
       classroomCoordinates: _coordinatesCalc(json['classroomCoordinates']),
       circleRadius: json['circleRadius'],
-      studentIds: List<String>.from(json['studentIds']),
+      students: List<DocumentReference>.from(json['students']),
     );
   }
 

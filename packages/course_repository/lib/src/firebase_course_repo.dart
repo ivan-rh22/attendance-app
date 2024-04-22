@@ -104,13 +104,15 @@ class FirebaseCourseRepo implements CourseRepository {
         final course = courseSnapshot.docs.first;
         final courseData = course.data();
         final courseId = course.id;
-        final List<dynamic> students = courseData['studentIds'] ?? [];
+        final List<dynamic> students = courseData['students'] ?? [];
 
-        if(students.contains(userId)){
+        // get user reference based on user id
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        if(students.contains(userRef)){
           throw Exception('User already joined course');
         }
 
-        students.add(userId);
+        students.add(userRef);
 
         // add the course to the user's courses list
         final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -119,7 +121,7 @@ class FirebaseCourseRepo implements CourseRepository {
         courses.add(courseId);
         await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
         
-        return coursesCollection.doc(courseId).update({'studentIds': students});
+        return coursesCollection.doc(courseId).update({'students': students});
       }
       else {
         throw Exception('Course not found');

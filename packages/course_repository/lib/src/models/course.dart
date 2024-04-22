@@ -14,7 +14,7 @@ class Course {
   TimeOfDay endTime;
   LatLng? classroomCoordinates;
   double? circleRadius;
-  List<String> studentIds;
+  List<DocumentReference> students;
 
   Course({
     required this.courseId,
@@ -27,8 +27,8 @@ class Course {
     required this.endTime,
     required this.classroomCoordinates,
     required this.circleRadius,
-    List<String>? studentIds,
-  }) : studentIds = studentIds ?? [];
+    List<DocumentReference>? students,
+  }) : students = students ?? [];
 
   static final empty = Course(
     courseId: '',
@@ -55,7 +55,7 @@ class Course {
       endTime: endTime,
       classroomCoordinates: classroomCoordinates,
       circleRadius: circleRadius,
-      studentIds: studentIds,
+      students: students,
     );
   }
 
@@ -71,12 +71,12 @@ class Course {
       endTime: entity.endTime,
       classroomCoordinates: entity.classroomCoordinates,
       circleRadius: entity.circleRadius,
-      studentIds: entity.studentIds,
+      students: entity.students,
     );
   }
 
   @override
   String toString() {
-    return 'Course: $courseId, $courseName, $accessToken, $roomNumber $instructorReference, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $studentIds';
+    return 'Course: $courseId, $courseName, $accessToken, $roomNumber $instructorReference, $daysOfWeek, $startTime, $endTime, $classroomCoordinates, $circleRadius, $students';
   }
 }
