@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
-import 'stud_course_details_screen.dart';
+import 'prof_course_details_screen.dart';
 import 'create_course_screen.dart';
 
 class ProfHome extends StatefulWidget {
@@ -16,34 +16,13 @@ class ProfHome extends StatefulWidget {
 
 class _ProfHomeState extends State<ProfHome> {
   late final MyUser currentUser;
-  final ScrollController _scrollController = ScrollController();
-  // TODO: Implement reload (pull to refresh)
-  // bool _isLoading = false;
+  GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
     super.initState();
     currentUser = context.read<AuthenticationBloc>().state.user!;
-    context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200.0 &&
-        !_scrollController.position.outOfRange) {
-      setState(() {
-        // _isLoading = true;
-      });
-      
-      context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
-    }
   }
 
   @override
@@ -56,39 +35,44 @@ class _ProfHomeState extends State<ProfHome> {
         elevation: 1,
         shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       ),
-      body: currentUser.courses.isEmpty
-        ? const Center(
-          child: Text('You have no courses yet.')
-        )
-        : BlocBuilder<GetCoursesBloc, GetCoursesState> (
-          builder: (context, state) {
-            if(state is GetCoursesSuccess){
-              // _isLoading = false;
-              return ListView.builder(
-                itemCount: state.courses.length,
-                itemBuilder: (context, index) {
-                  final course = state.courses[index];
-                  return CourseInfo(
-                    courseId: course.courseId,
-                    courseName: course.courseName,
-                    roomNumber: course.roomNumber,
-                    startTime: course.startTime,
-                    endTime: course.endTime,
-                    daysOfWeek: course.daysOfWeek,
-                  );
-                },
-              );
-            } else if (state is GetCoursesInProgress){
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return const Center(
-                child: Text('Failed to get courses'),
-                
-              );
-            }
-        }
+      body: RefreshIndicator(
+        key: refreshIndicatorKey,
+        onRefresh: () async {
+          context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
+        },
+        child: currentUser.courses.isEmpty
+          ? const Center(
+            child: Text('You have no courses yet.')
+          )
+          : BlocBuilder<GetCoursesBloc, GetCoursesState> (
+            builder: (context, state) {
+              if(state is GetCoursesSuccess){
+                return ListView.builder(
+                  itemCount: state.courses.length,
+                  itemBuilder: (context, index) {
+                    final course = state.courses[index];
+                    return CourseInfo(
+                      courseId: course.courseId,
+                      courseName: course.courseName,
+                      roomNumber: course.roomNumber,
+                      startTime: course.startTime,
+                      endTime: course.endTime,
+                      daysOfWeek: course.daysOfWeek,
+                    );
+                  },
+                );
+              } else if (state is GetCoursesInProgress){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                return const Center(
+                  child: Text('Failed to get courses'),
+                  
+                );
+              }
+          }
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

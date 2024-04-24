@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/views/clock_in_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import '../../../../blocs/get_course_bloc/get_course_bloc.dart';
 import '../blocs/leave_course_bloc/leave_course_bloc.dart';
 
@@ -17,16 +20,22 @@ class StudCourseDetailsScreen extends StatefulWidget {
 
 class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
   final _getCourseBloc = GetCourseBloc();
+  final Completer<GoogleMapController> _mapController = Completer<GoogleMapController>();
+  final Location locationController = Location();
+  LatLng? _currentPos;
+  StreamSubscription<LocationData>? _locationSubscription;
 
   @override
   void initState() {
     super.initState();
     _getCourseBloc.add(GetCourse(widget.courseId));
+    getLocation();
   }
 
   @override
   void dispose() {
     _getCourseBloc.close();
+    _locationSubscription?.cancel();
     super.dispose();
   }
 
@@ -202,20 +211,6 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
                               ),
                             ],
                           ),
-                          ListTile(
-                            title: const Text('Class Code'),
-                            subtitle: Text(course.accessToken),
-                            onTap: () {
-                              Clipboard.setData(
-                                  ClipboardData(text: course.accessToken));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Class code copied to clipboard'),
-                                ),
-                              );
-                            },
-                          )
                         ],
                       ),
                     ),
@@ -283,6 +278,57 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
                             }
                           },
                         )),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: Column(
+                                children: [
+                                  const Text('Location:', 
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Divider(indent: 30, endIndent: 30),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: 200,
+                                      width: MediaQuery.of(context).size.width * 0.9,
+                                      child: GoogleMap(
+                                        zoomControlsEnabled: false,
+                                        zoomGesturesEnabled: false,
+                                        tiltGesturesEnabled: false,
+                                        rotateGesturesEnabled: false,
+                                        scrollGesturesEnabled: false,
+                                        myLocationButtonEnabled: false,
+                                        myLocationEnabled: true,
+                                        mapType: MapType.normal,
+                                        onMapCreated: ((GoogleMapController controller) => _mapController.complete(controller)),
+                                        initialCameraPosition: CameraPosition(
+                                          target: _currentPos ?? course.classroomCoordinates,
+                                          zoom: 18,
+                                        ),
+                                        markers: {
+                                          Marker(
+                                            markerId: const MarkerId('classroom'),
+                                            position: course.classroomCoordinates,
+                                            infoWindow: InfoWindow(
+                                              title: course.roomNumber,
+                                              snippet: 'Classroom',
+                                            ),
+                                          ),
+                                        },
+                                      )
+                                    ),
+                                  )
+                                ]
+                              ),
+                            )
+                          ),
+                        ),
                   ],
                 ),
                 floatingActionButtonLocation:
@@ -309,5 +355,42 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
             }
           }),
     );
+  }
+  Future<void> _camToPos (LatLng pos) async {
+    final GoogleMapController controller = await _mapController.future;
+    CameraPosition newCameraPosition = CameraPosition(
+      target: pos, 
+      zoom: 18,
+    );
+    await controller.animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
+  }
+
+  Future<void> getLocation() async {
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    serviceEnabled = await locationController.serviceEnabled();
+    if (serviceEnabled){
+      serviceEnabled = await locationController.requestService();
+    } else {
+      return Future.error("Location services disabled.");
+    }
+
+    permissionGranted = await locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await locationController.requestPermission();
+      if(permissionGranted != PermissionStatus.granted){
+        return Future.error("Location services disabled.");
+      }
+    }
+    await locationController.enableBackgroundMode(enable: true);
+    _locationSubscription = locationController.onLocationChanged.listen((LocationData currentLocation) {
+      if(currentLocation.latitude != null && currentLocation.longitude != null){
+        setState(() {
+          _currentPos = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          _camToPos(_currentPos!);
+        });
+      }
+    });
   }
 }

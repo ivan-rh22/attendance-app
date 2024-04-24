@@ -1,6 +1,5 @@
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
 import 'package:attendance_app/src/screens/views/prof/blocs/create_course_bloc/bloc/create_course_bloc.dart';
-import 'package:attendance_app/src/screens/views/prof/blocs/navigators/course_navigator_observer.dart';
 import 'package:attendance_app/src/screens/views/prof/pcontroller.dart';
 import 'package:attendance_app/src/screens/views/stud/blocs/join_course_bloc/join_course_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/blocs/leave_course_bloc/leave_course_bloc.dart';
@@ -36,13 +35,6 @@ class MyAppView extends StatelessWidget {
       child: MaterialApp(
           title: 'Auto Attendance',
           debugShowCheckedModeBanner: false,
-          navigatorObservers: [
-            ReloadCoursesObserver(context),
-          ],
-          routes: {
-            '/prof_home': (context) => const ProfControl(),
-            '/stud_home': (context) => const StudControl(),
-          },
           theme: ThemeData.from(
             colorScheme: ColorScheme.light(
               background: Colors.white,

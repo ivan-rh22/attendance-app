@@ -22,7 +22,7 @@ class _StudControlState extends State<StudControl> {
     return Scaffold(
       body: Center(child: screens[aindex]),
       bottomNavigationBar: NavigationBar(
-        indicatorColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        indicatorColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.09),
         elevation: 1,
         shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),

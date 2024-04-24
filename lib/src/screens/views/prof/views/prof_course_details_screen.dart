@@ -15,7 +15,7 @@ class CourseDetailsScreen extends StatefulWidget {
 
 class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   final _bloc = GetCourseBloc();
-    final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
+  final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
 
 
   @override

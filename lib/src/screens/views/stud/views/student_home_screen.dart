@@ -1,6 +1,6 @@
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/blocs/get_courses_bloc/get_courses_bloc.dart';
-import 'package:attendance_app/src/screens/views/stud/views/course_details_screen.dart';
+import 'package:attendance_app/src/screens/views/stud/views/stud_course_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
@@ -17,6 +17,8 @@ class StudentHome extends StatefulWidget {
 
 class _StudentHomeState extends State<StudentHome> {
   late final MyUser currentUser;
+  GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -35,37 +37,43 @@ class _StudentHomeState extends State<StudentHome> {
         shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       ),
 
-      body: currentUser.courses.isEmpty
-        ? const Center(
-          child: Text('You have not joined any courses yet'),
-        )
-        : BlocBuilder<GetCoursesBloc, GetCoursesState> (
-          builder:(context, state) {
-            if (state is GetCoursesSuccess){
-              return ListView.builder(
-                itemCount: state.courses.length,
-                itemBuilder: (context, index) {
-                  final course = state.courses[index];
-                  return CourseInfo(
-                    courseId: course.courseId,
-                    courseName: course.courseName,
-                    roomNumber: course.roomNumber,
-                    startTime: course.startTime,
-                    endTime: course.endTime,
-                    daysOfWeek: course.daysOfWeek,
-                  );
-                },
-              );
-            } else if (state is GetCoursesInProgress){
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else{
-              return const Center(
-                child: Text('Failed to get courses'),
-              );
-            }
-          },
+      body: RefreshIndicator(
+        key: refreshIndicatorKey,
+        onRefresh: () async {
+          context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
+        },
+        child: currentUser.courses.isEmpty
+          ? const Center(
+            child: Text('You have not joined any courses yet'),
+          )
+          : BlocBuilder<GetCoursesBloc, GetCoursesState> (
+            builder:(context, state) {
+              if (state is GetCoursesSuccess){
+                return ListView.builder(
+                  itemCount: state.courses.length,
+                  itemBuilder: (context, index) {
+                    final course = state.courses[index];
+                    return CourseInfo(
+                      courseId: course.courseId,
+                      courseName: course.courseName,
+                      roomNumber: course.roomNumber,
+                      startTime: course.startTime,
+                      endTime: course.endTime,
+                      daysOfWeek: course.daysOfWeek,
+                    );
+                  },
+                );
+              } else if (state is GetCoursesInProgress){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else{
+                return const Center(
+                  child: Text('Failed to get courses'),
+                );
+              }
+            },
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
