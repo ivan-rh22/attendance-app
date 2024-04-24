@@ -12,8 +12,8 @@ class Course {
   List<int> daysOfWeek;
   TimeOfDay startTime;
   TimeOfDay endTime;
-  LatLng? classroomCoordinates;
-  double? circleRadius;
+  LatLng classroomCoordinates;
+  double circleRadius;
   List<DocumentReference> students;
 
   Course({
@@ -39,8 +39,8 @@ class Course {
     daysOfWeek: [],
     startTime: const TimeOfDay(hour: 00, minute: 00),
     endTime: const TimeOfDay(hour: 00, minute: 00),
-    classroomCoordinates: null,
-    circleRadius: null,
+    classroomCoordinates: const LatLng(0, 0),
+    circleRadius: 20,
   );
 
   CourseEntity toEntity() {

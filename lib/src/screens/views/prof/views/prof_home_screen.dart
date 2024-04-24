@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
-import 'course_details_screen.dart';
+import 'stud_course_details_screen.dart';
 import 'create_course_screen.dart';
 
 class ProfHome extends StatefulWidget {
@@ -168,19 +168,19 @@ class CourseInfo extends StatelessWidget {
                   ),
                   Text(daysOfWeek.map((day) {
                     switch (day) {
-                      case 1:
+                      case 0:
                         return 'Mon';
-                      case 2:
+                      case 1:
                         return 'Tue';
-                      case 3:
+                      case 2:
                         return 'Wed';
-                      case 4:
+                      case 3:
                         return 'Thu';
-                      case 5:
+                      case 4:
                         return 'Fri';
-                      case 6:
+                      case 5:
                         return 'Sat';
-                      case 7:
+                      case 6:
                         return 'Sun';
                       default:
                         return '';

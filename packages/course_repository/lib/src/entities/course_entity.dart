@@ -11,8 +11,8 @@ class CourseEntity {
   List<int> daysOfWeek;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  LatLng? classroomCoordinates;
-  double? circleRadius;
+  LatLng classroomCoordinates;
+  double circleRadius;
   List<DocumentReference> students;
 
   CourseEntity({
@@ -39,8 +39,8 @@ class CourseEntity {
       'daysOfWeek': daysOfWeek,
       'startTime': _timeOfDayToTimeStamp(startTime),
       'endTime': _timeOfDayToTimeStamp(endTime),
-      'classroomCoordinates': [classroomCoordinates!.latitude, classroomCoordinates!.longitude],
-      'radius': circleRadius,
+      'classroomCoordinates': [classroomCoordinates.latitude, classroomCoordinates.longitude],
+      'circleRadius': circleRadius,
       'students': students,
     };
   }

@@ -145,19 +145,19 @@ class CourseInfo extends StatelessWidget {
                   ),
                   Text(daysOfWeek.map((day) {
                     switch (day) {
-                      case 1:
+                      case 0:
                         return 'Mon';
-                      case 2:
+                      case 1:
                         return 'Tue';
-                      case 3:
+                      case 2:
                         return 'Wed';
-                      case 4:
+                      case 3:
                         return 'Thu';
-                      case 5:
+                      case 4:
                         return 'Fri';
-                      case 6:
+                      case 5:
                         return 'Sat';
-                      case 7:
+                      case 6:
                         return 'Sun';
                       default:
                         return '';
