@@ -14,6 +14,7 @@ class CourseEntity {
   LatLng classroomCoordinates;
   double circleRadius;
   List<DocumentReference> students;
+  Map<String, Map<DateTime, bool>> attendance;
 
   CourseEntity({
     required this.courseId,
@@ -27,7 +28,9 @@ class CourseEntity {
     required this.classroomCoordinates,
     required this.circleRadius,
     List<DocumentReference>? students,
-  }) : students = students ?? [];
+    Map<String, Map<DateTime, bool>>? attendance,
+  }) : students = students ?? [],
+       attendance = attendance ?? {};
 
   Map<String, Object?> toJson() {
     return {
@@ -42,6 +45,7 @@ class CourseEntity {
       'classroomCoordinates': [classroomCoordinates.latitude, classroomCoordinates.longitude],
       'circleRadius': circleRadius,
       'students': students,
+      'attendance': _attendanceToJson(attendance),
     };
   }
 
@@ -58,11 +62,12 @@ class CourseEntity {
       classroomCoordinates: _coordinatesCalc(json['classroomCoordinates']),
       circleRadius: json['circleRadius'],
       students: List<DocumentReference>.from(json['students']),
+      attendance: _attendance(json['attendance']),
     );
   }
 
   // HELPERS
-  Timestamp _timeOfDayToTimeStamp(TimeOfDay time) {
+  static Timestamp _timeOfDayToTimeStamp(TimeOfDay time) {
     final now = DateTime.now();
     return Timestamp.fromDate(DateTime(now.year, now.month, now.day, time.hour, time.minute));
   }
@@ -78,5 +83,31 @@ class CourseEntity {
     } else {
       return const LatLng(0,0);
     }
+  }
+  // convert to Map<String dynamic> for json
+  static Map<String, dynamic> _attendanceToJson(Map<String, Map<DateTime, bool>> attendance){
+    final Map<String, dynamic> json = {};
+    attendance.forEach((key, value) {
+      final Map<String, bool> dateMap = {};
+      value.forEach((innerKey, innerValue) {
+        dateMap[innerKey.toIso8601String()] = innerValue;
+      });
+      json[key] = dateMap;
+    });
+    return json;
+  }
+
+  static Map<String, Map<DateTime, bool>> _attendance(Map<String, dynamic> json) {
+    final Map<String, Map<DateTime, bool>> attendance = {};
+    json.forEach((key, value) {
+      final Map<DateTime, bool> dateMap = {};
+      value.forEach((innerKey, innerValue) {
+        final DateTime date = DateTime.parse(innerKey);
+        final bool value = innerValue;
+        dateMap[date] = value;
+      });
+      attendance[key] = dateMap;
+    });
+    return attendance;
   }
 }

@@ -178,7 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ListTile(
                     key: const Key('change_password_tile'),
                     enableFeedback: true,
-                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => ProfMap()),);}, // TODO: implement change password
+                    onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfMap()),);}, // TODO: implement change password
                     leading: const Icon(Icons.lock),
                     title: const Text('Change Password',
                       style: TextStyle(

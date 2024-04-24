@@ -293,7 +293,7 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ClockInScreen()));
+                            builder: (context) => const ClockInScreen()));
                   },
                   tooltip: 'Clock In',
                 ),
