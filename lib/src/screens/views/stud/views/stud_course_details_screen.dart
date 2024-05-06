@@ -39,6 +39,21 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
     super.dispose();
   }
 
+  bool _isCourseHappening(List<int> daysOfWeek, TimeOfDay dbstartTime, TimeOfDay dbendTime) {
+    final int now = DateTime.now().weekday;
+    final DateTime currentTime = DateTime.now();
+
+    if (daysOfWeek.contains(now-1)) {
+      DateTime startTime = DateTime.now();
+      DateTime endTime = DateTime.now();
+      startTime = DateTime(startTime.year, startTime.month, startTime.day, dbstartTime.hour, dbstartTime.minute);
+      endTime = DateTime(endTime.year, endTime.month, endTime.day, dbendTime.hour, dbendTime.minute);
+
+      return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<LeaveCourseBloc, LeaveCourseState>(
@@ -333,16 +348,18 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
                 ),
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.centerFloat,
-                floatingActionButton: FloatingActionButton.extended(
-                  label: const Text('Clock In'),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ClockInScreen()));
-                  },
-                  tooltip: 'Clock In',
-                ),
+                floatingActionButton: _isCourseHappening(course.daysOfWeek, course.startTime, course.endTime)
+                    ? FloatingActionButton.extended(
+                        label: const Text('Clock In'),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ClockInScreen()));
+                        },
+                        tooltip: 'Clock In',
+                      )
+                    : const SizedBox(),
               );
             } else if (snapshot.hasError) {
               return const Center(
