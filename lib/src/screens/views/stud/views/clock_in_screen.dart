@@ -187,7 +187,14 @@ class _ClockInScreenState extends State<ClockInScreen> {
     }
     //If not allowed and not clocked in I should see a gray button;
     else if(!allowed && !clocked){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
+      if(timerExpired) {
+        setState(() {
+          timerExpired = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You have been clocked out!'), backgroundColor: Colors.red,));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
+      }
     }
   }
 
