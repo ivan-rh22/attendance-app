@@ -40,7 +40,7 @@ class CourseEntity {
       'startTime': _timeOfDayToTimeStamp(startTime),
       'endTime': _timeOfDayToTimeStamp(endTime),
       'classroomCoordinates': [classroomCoordinates!.latitude, classroomCoordinates!.longitude],
-      'radius': circleRadius,
+      'circleRadius': circleRadius,
       'students': students,
     };
   }

@@ -18,7 +18,7 @@ class _ProfMapState extends State<ProfMap> {
   late GoogleMapController mapController;
   Set<Circle> circles = {};
   TextEditingController txtcontroller = TextEditingController();
-  double _radius = 20;
+  double _radius = 10;
   late LatLng? pointsave;
   bool showcircle = false;
   bool smallercheck = false;
@@ -71,7 +71,7 @@ class _ProfMapState extends State<ProfMap> {
             circles: circles,
             onTap: (LatLng point) {
               _moveToLocation(point);
-              _addCircle(point, 20, false);
+              _addCircle(point,10, false);
             },
           ),
           Positioned(
@@ -96,7 +96,7 @@ class _ProfMapState extends State<ProfMap> {
                           controller: txtcontroller,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            hintText: 'Geofence Radius (20-100)',
+                            hintText: 'Geofence Radius (10-100)',
                             border: InputBorder.none,
                           ),
                         ),
@@ -107,8 +107,8 @@ class _ProfMapState extends State<ProfMap> {
                         setState(() {
                           if(txtcontroller.text.toString().isNotEmpty){
                             double tempRad = double.parse(txtcontroller.text.toString());
-                            if(tempRad < 20 || tempRad > 100) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Radius must be between 20 and 100')));
+                            if(tempRad < 10 || tempRad > 100) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Radius must be between 10 and 100')));
                             } else {
                               tempRad <= _radius ? smallercheck = true : smallercheck = false;
                               _radius = tempRad;

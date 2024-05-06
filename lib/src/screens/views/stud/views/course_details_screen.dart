@@ -188,7 +188,7 @@ class _StudCourseDetailsScreenState extends State<StudCourseDetailsScreen> {
               label: const Text('Clock In'),
               onPressed: () {
                 Navigator.push(context, 
-                  MaterialPageRoute(builder: (context) => ClockInScreen())
+                  MaterialPageRoute(builder: (context) => ClockInScreen(coordinates: course!.classroomCoordinates!, radius: course.circleRadius!))
                 );
               },
               tooltip: 'Clock In',

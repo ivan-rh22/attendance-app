@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'package:attendance_app/src/screens/views/stud/Utils/geofence_help.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
+bool clocked = false, allowed = false;
 
 class ClockInScreen extends StatefulWidget {
-  const ClockInScreen({super.key});
+  LatLng coordinates;
+  final double radius;
+  ClockInScreen({super.key, required this.coordinates, required this.radius});
 
   @override
   State<ClockInScreen> createState() => _ClockInScreenState();
@@ -50,7 +54,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
           bottom: 20, right: 20,
           width: 130,
           child: FloatingActionButton.extended(
-            onPressed: updateButton,
+            onPressed: btnLogic,
             label: Text(buttonText), 
             icon: Icon(currentIcon), 
             foregroundColor: Colors.white, 
@@ -93,28 +97,69 @@ class _ClockInScreenState extends State<ClockInScreen> {
           _currentPos = LatLng(currentLocation.latitude!, currentLocation.longitude!);
           _camToPos(_currentPos!);
         });
+        double distance = calcDistance(currentLocation.latitude!, currentLocation.longitude!, widget.coordinates.latitude, widget.coordinates.longitude);
+        if(distance <= widget.radius) {
+          setState(() {
+            allowed = true;
+            if(buttonText == "Move Closer"){
+              buttonColor = Colors.green;
+              buttonText = "Clock In";
+              currentIcon = Icons.play_arrow;
+            }
+          });
+        } else {
+          setState(() {
+            allowed = false;
+            if(!clocked){
+              buttonColor = Colors.blueGrey;
+              buttonText = "Move Closer";
+              currentIcon = Icons.directions_walk;
+            } else {
+              //Here would go the timer logic.
+            }
+          });
+        }
       }
     });
+  }
+
+  btnLogic(){
+    //If allowed and not clocked in this happens when i push
+    if(allowed && !clocked){
+      setState((){
+        clocked = true;
+        buttonColor = Colors.red;
+        buttonText = "Clock Out";
+        currentIcon = Icons.pause;
+      });
+    }
+    //if allowed and clocked in this happens when i push
+    else if(allowed && clocked){
+      setState((){
+        clocked = false;
+        buttonColor = Colors.green;
+        buttonText = "Clock In";
+        currentIcon = Icons.play_arrow;
+      });
+    }
+    //If not allowed but clocked in this happens when i push
+    else if(!allowed && clocked) {
+      setState((){
+        clocked = false;
+        buttonColor = Colors.green;
+        buttonText = "Clock in";
+        currentIcon = Icons.play_arrow;
+      });
+    }
+    //If not allowed and not clocked in I should see a gray button;
+    else if(!allowed && !clocked){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
+    }
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
     super.dispose();
-  }
-
-  void updateButton() {
-    setState(() {
-      if(buttonColor == Colors.green){
-        buttonColor = Colors.red;
-        buttonText = 'Clock Out';
-        currentIcon = Icons.pause;
-      }
-      else{
-        buttonColor = Colors.green;
-        buttonText = 'Clock In';
-        currentIcon = Icons.play_arrow;
-      }
-    });
   }
 }
