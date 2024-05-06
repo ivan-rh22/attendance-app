@@ -23,6 +23,37 @@ class _ClockInScreenState extends State<ClockInScreen> {
   Color buttonColor = Colors.green;
   String buttonText = 'Clock in';
   IconData currentIcon = Icons.play_arrow;
+  bool timerExpired = false;
+  Timer? timer;
+  int secondsRemaining = 10;
+
+  void startTimer() {
+    const sec = Duration(seconds: 1);
+    timer = Timer.periodic(sec, (timed) {
+      if(secondsRemaining == 0){
+        timed.cancel();
+        setState(() {
+          btnLogic();
+          timerExpired = true;
+        });
+      } else {
+        setState(() {
+          buttonText = "$secondsRemaining";
+          secondsRemaining--;
+        });
+      }
+    });
+  }
+
+  void stopTimer() {
+    if(timer != null) {
+      timer!.cancel();
+      timer = null;
+      setState(() {
+        secondsRemaining = 10;
+      });
+    }
+  }
 
 
   @override
@@ -116,6 +147,9 @@ class _ClockInScreenState extends State<ClockInScreen> {
               currentIcon = Icons.directions_walk;
             } else {
               //Here would go the timer logic.
+              setState(() {
+                startTimer();
+              });
             }
           });
         }
@@ -160,6 +194,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
   @override
   void dispose() {
     _locationSubscription?.cancel();
+    stopTimer();
     super.dispose();
   }
 }
