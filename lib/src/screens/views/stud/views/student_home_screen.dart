@@ -1,6 +1,6 @@
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/blocs/get_courses_bloc/get_courses_bloc.dart';
-import 'package:attendance_app/src/screens/views/stud/views/course_details_screen.dart';
+import 'package:attendance_app/src/screens/views/stud/views/stud_course_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
@@ -17,6 +17,8 @@ class StudentHome extends StatefulWidget {
 
 class _StudentHomeState extends State<StudentHome> {
   late final MyUser currentUser;
+  GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -30,42 +32,48 @@ class _StudentHomeState extends State<StudentHome> {
       appBar: AppBar(
         title: const Text('Courses'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.09),
         elevation: 1,
         shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       ),
 
-      body: currentUser.courses.isEmpty
-        ? const Center(
-          child: Text('You have not joined any courses yet'),
-        )
-        : BlocBuilder<GetCoursesBloc, GetCoursesState> (
-          builder:(context, state) {
-            if (state is GetCoursesSuccess){
-              return ListView.builder(
-                itemCount: state.courses.length,
-                itemBuilder: (context, index) {
-                  final course = state.courses[index];
-                  return CourseInfo(
-                    courseId: course.courseId,
-                    courseName: course.courseName,
-                    roomNumber: course.roomNumber,
-                    startTime: course.startTime,
-                    endTime: course.endTime,
-                    daysOfWeek: course.daysOfWeek,
-                  );
-                },
-              );
-            } else if (state is GetCoursesInProgress){
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else{
-              return const Center(
-                child: Text('Failed to get courses'),
-              );
-            }
-          },
+      body: RefreshIndicator(
+        key: refreshIndicatorKey,
+        onRefresh: () async {
+          context.read<GetCoursesBloc>().add(GetCourses(currentUser.userId));
+        },
+        child: currentUser.courses.isEmpty
+          ? const Center(
+            child: Text('You have not joined any courses yet'),
+          )
+          : BlocBuilder<GetCoursesBloc, GetCoursesState> (
+            builder:(context, state) {
+              if (state is GetCoursesSuccess){
+                return ListView.builder(
+                  itemCount: state.courses.length,
+                  itemBuilder: (context, index) {
+                    final course = state.courses[index];
+                    return CourseInfo(
+                      courseId: course.courseId,
+                      courseName: course.courseName,
+                      roomNumber: course.roomNumber,
+                      startTime: course.startTime,
+                      endTime: course.endTime,
+                      daysOfWeek: course.daysOfWeek,
+                    );
+                  },
+                );
+              } else if (state is GetCoursesInProgress){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else{
+                return const Center(
+                  child: Text('Failed to get courses'),
+                );
+              }
+            },
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -95,10 +103,26 @@ class CourseInfo extends StatelessWidget {
     required this.courseId,
     required this.courseName,
     required this.roomNumber,
-    this.startTime = const TimeOfDay(hour: 10, minute: 20),
-    this.endTime = const TimeOfDay(hour: 11, minute: 0),
-    this.daysOfWeek = const [1, 3, 5]
+    required this.startTime,
+    required this.endTime,
+    required this.daysOfWeek
   });
+
+  // function to check if the current day is in the list of days of the week and if the current time is between the start and end time
+  bool _isCourseHappening() {
+    final int now = DateTime.now().weekday;
+    final DateTime currentTime = DateTime.now();
+
+    if (daysOfWeek.contains(now-1)) {
+      DateTime startTime = DateTime.now();
+      DateTime endTime = DateTime.now();
+      startTime = DateTime(startTime.year, startTime.month, startTime.day, this.startTime.hour, this.startTime.minute);
+      endTime = DateTime(endTime.year, endTime.month, endTime.day, this.endTime.hour, this.endTime.minute);
+
+      return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +141,7 @@ class CourseInfo extends StatelessWidget {
             ListTile(
               title: Text(courseName, 
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
                 )
@@ -136,7 +160,15 @@ class CourseInfo extends StatelessWidget {
               ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: _isCourseHappening() ? [
+                  const Icon(Icons.access_time, color: Colors.red),
+                  const Text('Course in Progress',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 14,
+                    )
+                  ),
+                ] : [
                   Text('${startTime.format(context)} - ${endTime.format(context)}',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -145,19 +177,19 @@ class CourseInfo extends StatelessWidget {
                   ),
                   Text(daysOfWeek.map((day) {
                     switch (day) {
-                      case 1:
+                      case 0:
                         return 'Mon';
-                      case 2:
+                      case 1:
                         return 'Tue';
-                      case 3:
+                      case 2:
                         return 'Wed';
-                      case 4:
+                      case 3:
                         return 'Thu';
-                      case 5:
+                      case 4:
                         return 'Fri';
-                      case 6:
+                      case 5:
                         return 'Sat';
-                      case 7:
+                      case 6:
                         return 'Sun';
                       default:
                         return '';

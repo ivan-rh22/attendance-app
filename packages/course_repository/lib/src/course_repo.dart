@@ -14,5 +14,5 @@ abstract class CourseRepository {
 
   Future<void> joinCourse(String accessKey, String userId);
 
-  Future<void> leaveCourse(String courseId);
+  Future<void> leaveCourse(String courseId, String userId);
 }

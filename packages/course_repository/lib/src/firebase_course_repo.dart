@@ -105,7 +105,8 @@ class FirebaseCourseRepo implements CourseRepository {
         final courseData = course.data();
         final courseId = course.id;
         final List<dynamic> students = courseData['students'] ?? [];
-
+        // get the attendance map
+        final Map<dynamic, dynamic> attendance = courseData['attendance'] ?? {};
         // get user reference based on user id
         final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
         if(students.contains(userRef)){
@@ -113,6 +114,7 @@ class FirebaseCourseRepo implements CourseRepository {
         }
 
         students.add(userRef);
+        attendance[userRef.id] = {};
 
         // add the course to the user's courses list
         final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -121,7 +123,7 @@ class FirebaseCourseRepo implements CourseRepository {
         courses.add(courseId);
         await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
         
-        return coursesCollection.doc(courseId).update({'students': students});
+        return coursesCollection.doc(courseId).update({'students': students, 'attendance': attendance});
       }
       else {
         throw Exception('Course not found');
@@ -133,10 +135,35 @@ class FirebaseCourseRepo implements CourseRepository {
   }
 
   @override
-  Future<void> leaveCourse(String courseId) {
+  Future<void> leaveCourse(String courseId, String userId) async {
     try{
-      // TODO: implement leaveCourse
-      return Future.value();
+      // get the course with the id
+      final courseSnapshot = await coursesCollection.doc(courseId).get();
+      if(courseSnapshot.exists){
+        final courseData = courseSnapshot.data();
+        final List<dynamic> students = courseData?['students'] ?? [];
+
+        // get user reference based on user id
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        if(!students.contains(userRef)){
+          throw Exception('User not in course');
+        }
+
+        // remove the user from the course's students list
+        students.remove(userRef);
+
+        // remove the course from the user's courses list
+        final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        final userData = userSnapshot.data();
+        final List<dynamic> courses = userData?['courses'] ?? [];
+        courses.remove(courseId);
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
+
+        return coursesCollection.doc(courseId).update({'students': students});
+      } else {
+        throw Exception('Course not found');
+      }
+
     } catch(e) {
       log('Error leaving course: ${e.toString()}');
       rethrow;

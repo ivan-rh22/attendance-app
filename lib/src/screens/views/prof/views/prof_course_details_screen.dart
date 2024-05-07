@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../blocs/get_course_bloc/get_course_bloc.dart';
 
 class CourseDetailsScreen extends StatefulWidget {
@@ -14,6 +15,8 @@ class CourseDetailsScreen extends StatefulWidget {
 
 class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
   final _bloc = GetCourseBloc();
+  final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
+
 
   @override
   void initState() {
@@ -78,7 +81,27 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: Text(course?.daysOfWeek.join(', ') ?? ''),
+                              subtitle: Text(course!.daysOfWeek.map((day) {
+                                switch (day) {
+                                  case 0:
+                                    return 'Mon';
+                                  case 1:
+                                    return 'Tue';
+                                  case 2:
+                                    return 'Wed';
+                                  case 3:
+                                    return 'Thu';
+                                  case 4:
+                                    return 'Fri';
+                                  case 5:
+                                    return 'Sat';
+                                  case 6:
+                                    return 'Sun';
+                                  default:
+                                    return '';
+                                }
+                              }).join(', ')
+                              ),
                             ),
                           ),
                         ],
@@ -92,7 +115,7 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: Text(course?.startTime.format(context) ?? ''),
+                              subtitle: Text(course.startTime.format(context)),
                             ),
                           ),
                           Expanded(
@@ -102,16 +125,20 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: Text(course?.endTime.format(context) ?? ''),
+                              subtitle: Text(course.endTime.format(context)),
                             ),
                           ),
                         ],
                       ),
                       ListTile(
-                        title: const Text('Class Code'),
-                        subtitle: Text(course?.accessToken ?? ''),
+                        title: const Text('Class Code:', 
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(course.accessToken),
                         onTap: () {
-                          Clipboard.setData(ClipboardData(text: course!.accessToken));
+                          Clipboard.setData(ClipboardData(text: course.accessToken));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Class code copied to clipboard'),
@@ -122,10 +149,71 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                     ],
                   ),
                 ),
+                
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Column(
+                        children: [
+                          const Text('Location:', 
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Divider(indent: 30, endIndent: 30),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              height: 200,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: GoogleMap(
+                                zoomControlsEnabled: false,
+                                zoomGesturesEnabled: false,
+                                tiltGesturesEnabled: false,
+                                rotateGesturesEnabled: false,
+                                scrollGesturesEnabled: false,
+                                myLocationButtonEnabled: false,
+                                mapType: MapType.hybrid,
+                                onMapCreated: ((GoogleMapController controller) => mapController.complete(controller)),
+                                initialCameraPosition: CameraPosition(
+                                  target: course.classroomCoordinates,
+                                  zoom: 18,
+                                ),
+                                markers: {
+                                  Marker(
+                                    markerId: const MarkerId('classroom'),
+                                    position: course.classroomCoordinates,
+                                    infoWindow: InfoWindow(
+                                      title: course.roomNumber,
+                                      snippet: 'Classroom',
+                                    ),
+                                  ),
+                                },
+                                circles: <Circle>{
+                                  Circle(
+                                    circleId: const CircleId('Clock in Radius'),
+                                    center: course.classroomCoordinates,
+                                    radius: course.circleRadius,
+                                    fillColor: Colors.yellow.withOpacity(0.5),
+                                    strokeColor: Colors.yellow,
+                                    strokeWidth: 2,
+                                  ),
+                                },
+                              )
+                            ),
+                          )
+                        ]
+                      ),
+                    )
+                  ),
+                ),
                 Card(
                   margin: const EdgeInsets.all(10),
                   child: StreamBuilder(
-                    stream: course?.instructorReference.snapshots(),
+                    stream: course.instructorReference.snapshots(),
                     builder:(context, snapshot) {
                       if(snapshot.hasData){
                         final instructorData = snapshot.data?.data() as Map<String, dynamic>;
@@ -191,15 +279,15 @@ class _CourseDetailsScreenState extends State<CourseDetailsScreen> {
                 ),
                 const Divider(indent: 20, endIndent: 20),
                 Expanded(
-                  child: course?.students.isEmpty ?? true
+                  child: course.students.isEmpty
                     ? const Center(
                       child: Text('No students in this course'),
                     )
                     : ListView.builder(
-                      itemCount: course?.students.length,
+                      itemCount: course.students.length,
                       itemBuilder: (context, index) {
                         return StreamBuilder(
-                          stream: course?.students[index].snapshots(), 
+                          stream: course.students[index].snapshots(), 
                           builder: ((context, snapshot) {
                             if(snapshot.hasData){
                               final studentData = snapshot.data?.data() as Map<String, dynamic>;
