@@ -19,6 +19,7 @@ class CreateCourseScreen extends StatefulWidget {
 class _CreateCourseScreenState extends State<CreateCourseScreen> {
   final _formKey = GlobalKey<FormState>();
   final courseNameController = TextEditingController();
+  final courseRoomController = TextEditingController();
   final Completer<GoogleMapController> mapController = Completer<GoogleMapController>();
   Set<Circle> circles = {};
   LatLng? classroomCoordinates;
@@ -134,6 +135,26 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                         },
                       ),
                     ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: MyTextField(
+                        controller: courseRoomController,
+                        hintText: 'Room Number',
+                        obscureText: false,
+                        keyboardType: TextInputType.text,
+                        prefixIcon: const Icon(Icons.room),
+                        validator: (val){
+                          if(val!.isEmpty){
+                            return 'Please enter a room';
+                          }
+                          return null;
+                        },
+                      ),
+                    )
                   ),
 
                   const SizedBox(height: 20),
@@ -394,13 +415,15 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
             child: FloatingActionButton.extended(
               backgroundColor: Theme.of(context).colorScheme.primary,
               onPressed: () {
-                if(_formKey.currentState!.validate() && classroomCoordinates?.latitude != null){
+                if(_formKey.currentState!.validate() && classroomCoordinates?.latitude != null || classroomCoordinates?.longitude != null){
                   final course = Course.empty;
                   course.courseName = courseNameController.text;
+                  course.roomNumber = courseRoomController.text;
                   course.daysOfWeek = daysOfWeek;
                   course.startTime = startTime;
                   course.endTime = endTime;
-                  course.classroomCoordinates = classroomCoordinates;
+                  course.classroomCoordinates = classroomCoordinates!;
+                  course.circleRadius = circleRadius!;
 
                   setState(() {
                     context.read<CreateCourseBloc>().add(CreateCourse(course,context.read<AuthenticationBloc>().state.user!.userId));

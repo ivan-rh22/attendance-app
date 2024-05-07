@@ -4,57 +4,70 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class CourseEntity {
   String courseId;
+  String accessToken;
   String courseName;
-  String instructorId;
+  String roomNumber;
+  DocumentReference instructorReference;
   List<int> daysOfWeek;
   final TimeOfDay startTime;
   final TimeOfDay endTime;
-  LatLng? classroomCoordinates;
-  double? circleRadius;
-  List<String> studentIds;
+  LatLng classroomCoordinates;
+  double circleRadius;
+  List<DocumentReference> students;
+  Map<String, Map<DateTime, bool>> attendance;
 
   CourseEntity({
     required this.courseId,
+    required this.accessToken,
     required this.courseName,
-    required this.instructorId,
+    required this.roomNumber,
+    required this.instructorReference,
     required this.daysOfWeek,
     required this.startTime,
     required this.endTime,
     required this.classroomCoordinates,
     required this.circleRadius,
-    List<String>? studentIds,
-  }) : studentIds = studentIds ?? [];
+    List<DocumentReference>? students,
+    Map<String, Map<DateTime, bool>>? attendance,
+  }) : students = students ?? [],
+       attendance = attendance ?? {};
 
   Map<String, Object?> toJson() {
     return {
       'courseId': courseId,
+      'accessToken': accessToken,
       'courseName': courseName,
-      'instructorId': instructorId,
+      'roomNumber': roomNumber,
+      'instructorReference': instructorReference,
       'daysOfWeek': daysOfWeek,
       'startTime': _timeOfDayToTimeStamp(startTime),
       'endTime': _timeOfDayToTimeStamp(endTime),
-      'classroomCoordinates': [classroomCoordinates!.latitude, classroomCoordinates!.longitude],
-      'radius': circleRadius,
-      'studentIds': studentIds,
+      'classroomCoordinates': [classroomCoordinates.latitude, classroomCoordinates.longitude],
+      'circleRadius': circleRadius,
+      'students': students,
+      'attendance': _attendanceToJson(attendance),
     };
   }
 
   static CourseEntity fromJson(Map<String, dynamic> json) {
     return CourseEntity(
       courseId: json['courseId'],
+      accessToken: json['accessToken'],
       courseName: json['courseName'],
-      instructorId: json['instructorId'],
+      roomNumber: json['roomNumber'],
+      instructorReference: json['instructorReference'],
       daysOfWeek: List<int>.from(json['daysOfWeek']),
       startTime: _timeStampToTimeOfDay(json['startTime']),
       endTime: _timeStampToTimeOfDay(json['endTime']),
       classroomCoordinates: _coordinatesCalc(json['classroomCoordinates']),
       circleRadius: json['circleRadius'],
-      studentIds: List<String>.from(json['studentIds']),
+      students: List<DocumentReference>.from(json['students']),
+      attendance: _attendance(json['attendance']),
     );
   }
 
   // HELPERS
-  Timestamp _timeOfDayToTimeStamp(TimeOfDay time) {
+  static Timestamp _timeOfDayToTimeStamp(TimeOfDay time) {
     final now = DateTime.now();
     return Timestamp.fromDate(DateTime(now.year, now.month, now.day, time.hour, time.minute));
   }
@@ -70,5 +83,31 @@ class CourseEntity {
     } else {
       return const LatLng(0,0);
     }
+  }
+  // convert to Map<String dynamic> for json
+  static Map<String, dynamic> _attendanceToJson(Map<String, Map<DateTime, bool>> attendance){
+    final Map<String, dynamic> json = {};
+    attendance.forEach((key, value) {
+      final Map<String, bool> dateMap = {};
+      value.forEach((innerKey, innerValue) {
+        dateMap[innerKey.toIso8601String()] = innerValue;
+      });
+      json[key] = dateMap;
+    });
+    return json;
+  }
+
+  static Map<String, Map<DateTime, bool>> _attendance(Map<String, dynamic> json) {
+    final Map<String, Map<DateTime, bool>> attendance = {};
+    json.forEach((key, value) {
+      final Map<DateTime, bool> dateMap = {};
+      value.forEach((innerKey, innerValue) {
+        final DateTime date = DateTime.parse(innerKey);
+        final bool value = innerValue;
+        dateMap[date] = value;
+      });
+      attendance[key] = dateMap;
+    });
+    return attendance;
   }
 }

@@ -12,7 +12,7 @@ abstract class CourseRepository {
 
   Future<void> updateCourse(Course course);
 
-  Future<void> joinCourse(String courseId);
+  Future<void> joinCourse(String accessKey, String userId);
 
-  Future<void> leaveCourse(String courseId);
+  Future<void> leaveCourse(String courseId, String userId);
 }

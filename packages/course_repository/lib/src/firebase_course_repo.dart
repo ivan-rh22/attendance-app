@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:course_repository/course_repository.dart';
+import 'package:random_x/random_x.dart';
 
 
 class FirebaseCourseRepo implements CourseRepository {
@@ -17,8 +18,12 @@ class FirebaseCourseRepo implements CourseRepository {
       final userData = userSnapshot.data();
       if(userData != null){
         final List<dynamic> courses = userData['courses'] ?? [];
-        final courseSnapshots = await coursesCollection.where(FieldPath.documentId, whereIn: courses).get();
-        yield courseSnapshots.docs.map((doc) => Course.fromEntity(CourseEntity.fromJson(doc.data()))).toList();
+        if(courses.isNotEmpty){
+          final courseSnapshots = await coursesCollection.where(FieldPath.documentId, whereIn: courses).get();
+          yield courseSnapshots.docs.map((doc) => Course.fromEntity(CourseEntity.fromJson(doc.data()))).toList();
+        } else {
+          yield [];
+        }
       }
       else {
         throw Exception('User not found');
@@ -29,14 +34,34 @@ class FirebaseCourseRepo implements CourseRepository {
     }
   }
 
+  Stream<Course> courseStream(String courseId) {
+    try {
+      return coursesCollection.doc(courseId).snapshots().map((snapshot) {
+        if(snapshot.exists){
+          return Course.fromEntity(CourseEntity.fromJson(snapshot.data()!));
+        }
+        else {
+          throw Exception('Course not found');
+        }
+      });
+    } catch (e) {
+      log('Error getting course stream: ${e.toString()}');
+      rethrow;
+    }
+  }
+
   @override
   Future<Course> createCourse(Course course, String userId) async {
     try {
-      final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final userSnapshot = await userRef.get();
       final userData = userSnapshot.data();
+
       if(userData != null && userData['isTeacher'] == true){
-        // add instructorId to course
-        course.instructorId = userId;
+        // add instructor reference to course
+        course.instructorReference = userSnapshot.reference;
+        // generate access token
+        course.accessToken = RndX.randomString(type: RandomCharStringType.alphaNumerical, length: 10).toUpperCase();
 
         final documentReference = await coursesCollection.add(course.toEntity().toJson());
 
@@ -70,10 +95,39 @@ class FirebaseCourseRepo implements CourseRepository {
   }
 
   @override
-  Future<void> joinCourse(String courseId) {
+  Future<void> joinCourse(String accessKey, String userId) async {
     try{
-      // TODO: implement joinCourse
-      return Future.value();
+      // get the course with the access key
+      final courseSnapshot = await coursesCollection.where('accessToken', isEqualTo: accessKey).get();
+      if(courseSnapshot.docs.isNotEmpty){
+        // add the user to the course's students list
+        final course = courseSnapshot.docs.first;
+        final courseData = course.data();
+        final courseId = course.id;
+        final List<dynamic> students = courseData['students'] ?? [];
+        // get the attendance map
+        final Map<dynamic, dynamic> attendance = courseData['attendance'] ?? {};
+        // get user reference based on user id
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        if(students.contains(userRef)){
+          throw Exception('User already joined course');
+        }
+
+        students.add(userRef);
+        attendance[userRef.id] = {};
+
+        // add the course to the user's courses list
+        final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        final userData = userSnapshot.data();
+        final List<dynamic> courses = userData?['courses'] ?? [];
+        courses.add(courseId);
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
+        
+        return coursesCollection.doc(courseId).update({'students': students, 'attendance': attendance});
+      }
+      else {
+        throw Exception('Course not found');
+      }
     } catch(e) {
       log('Error joining course: ${e.toString()}');
       rethrow;
@@ -81,10 +135,35 @@ class FirebaseCourseRepo implements CourseRepository {
   }
 
   @override
-  Future<void> leaveCourse(String courseId) {
+  Future<void> leaveCourse(String courseId, String userId) async {
     try{
-      // TODO: implement leaveCourse
-      return Future.value();
+      // get the course with the id
+      final courseSnapshot = await coursesCollection.doc(courseId).get();
+      if(courseSnapshot.exists){
+        final courseData = courseSnapshot.data();
+        final List<dynamic> students = courseData?['students'] ?? [];
+
+        // get user reference based on user id
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        if(!students.contains(userRef)){
+          throw Exception('User not in course');
+        }
+
+        // remove the user from the course's students list
+        students.remove(userRef);
+
+        // remove the course from the user's courses list
+        final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+        final userData = userSnapshot.data();
+        final List<dynamic> courses = userData?['courses'] ?? [];
+        courses.remove(courseId);
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({'courses': courses});
+
+        return coursesCollection.doc(courseId).update({'students': students});
+      } else {
+        throw Exception('Course not found');
+      }
+
     } catch(e) {
       log('Error leaving course: ${e.toString()}');
       rethrow;
