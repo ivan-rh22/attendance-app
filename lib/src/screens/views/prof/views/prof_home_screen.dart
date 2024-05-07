@@ -1,10 +1,10 @@
 import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/blocs/get_courses_bloc/get_courses_bloc.dart';
+import 'package:attendance_app/src/screens/views/prof/views/prof_course_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_repository/user_repository.dart';
 
-import 'prof_course_details_screen.dart';
 import 'create_course_screen.dart';
 
 class ProfHome extends StatefulWidget {
@@ -127,7 +127,7 @@ class CourseInfo extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, 
-          MaterialPageRoute(builder: (context) => CourseDetailsScreen(courseId: courseId))
+          MaterialPageRoute(builder: (context) => ProfCourseDetailsController(courseId: courseId))
         );
       },
       child: Card(

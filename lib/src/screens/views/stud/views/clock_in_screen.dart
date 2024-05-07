@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'package:attendance_app/src/screens/views/stud/Utils/geofence_help.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
+bool clocked = false, inside = false;
 
 class ClockInScreen extends StatefulWidget {
-  const ClockInScreen({super.key});
+  final LatLng coordinates;
+  final double radius;
+  const ClockInScreen({super.key, required this.coordinates, required this.radius});
 
   @override
   State<ClockInScreen> createState() => _ClockInScreenState();
@@ -19,6 +23,34 @@ class _ClockInScreenState extends State<ClockInScreen> {
   Color buttonColor = Colors.green;
   String buttonText = 'Clock in';
   IconData currentIcon = Icons.play_arrow;
+  int countdown = 30;
+  bool timerStated = false;
+
+  void startTimer() {
+    Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        buttonText = '$countdown';
+      });
+
+      if(inside){
+        timer.cancel();
+        countdown = 30;
+        timerStated = false;
+        setState(() {
+          buttonText = 'Clock out';
+        });
+      } else {
+        if(countdown <= 0){
+          timer.cancel();
+          clocked = false;
+          timerStated = false;
+          countdown = 30;
+        } else {
+          countdown--;
+        }
+      }
+    });
+  }
 
 
   @override
@@ -50,7 +82,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
           bottom: 20, right: 20,
           width: 130,
           child: FloatingActionButton.extended(
-            onPressed: updateButton,
+            onPressed: btnLogic,
             label: Text(buttonText), 
             icon: Icon(currentIcon), 
             foregroundColor: Colors.white, 
@@ -93,28 +125,64 @@ class _ClockInScreenState extends State<ClockInScreen> {
           _currentPos = LatLng(currentLocation.latitude!, currentLocation.longitude!);
           _camToPos(_currentPos!);
         });
+        double distance = calcDistance(currentLocation.latitude!, currentLocation.longitude!, widget.coordinates.latitude, widget.coordinates.longitude);
+        if(distance <= widget.radius) {
+          setState(() {
+            inside = true;
+            if(buttonText == "Move Closer"){
+              buttonColor = Colors.green;
+              buttonText = "Clock In";
+              currentIcon = Icons.play_arrow;
+            }
+          });
+        } else {
+          setState(() {
+            inside = false;
+            if(!clocked){
+              buttonColor = Colors.blueGrey;
+              buttonText = "Move Closer";
+              currentIcon = Icons.directions_walk;
+            } else {
+              //Here would go the timer logic.
+              if(!timerStated){
+                timerStated = true;
+                startTimer();
+              }
+            }
+          });
+        }
       }
     });
+  }
+
+  btnLogic(){
+    //If inside and not clocked in this happens when i push
+    if(inside && !clocked){
+      setState((){
+        clocked = true;
+        buttonColor = Colors.red;
+        buttonText = "Clock Out";
+        currentIcon = Icons.pause;
+      });
+    }
+    //if inside and clocked in this happens when i push or If not inside but clocked in this happens when i push
+    else if((inside && clocked) || (!inside && clocked)){
+      setState((){
+        clocked = false;
+        buttonColor = Colors.green;
+        buttonText = "Clock In";
+        currentIcon = Icons.play_arrow;
+      });
+    }
+    //If not inside and not clocked in I should see a gray button;
+    else if(!inside && !clocked){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
+    }
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
     super.dispose();
-  }
-
-  void updateButton() {
-    setState(() {
-      if(buttonColor == Colors.green){
-        buttonColor = Colors.red;
-        buttonText = 'Clock Out';
-        currentIcon = Icons.pause;
-      }
-      else{
-        buttonColor = Colors.green;
-        buttonText = 'Clock In';
-        currentIcon = Icons.play_arrow;
-      }
-    });
   }
 }
