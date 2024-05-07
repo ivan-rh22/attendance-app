@@ -7,9 +7,9 @@ import 'package:location/location.dart';
 bool clocked = false, inside = false;
 
 class ClockInScreen extends StatefulWidget {
-  LatLng coordinates;
+  final LatLng coordinates;
   final double radius;
-  ClockInScreen({super.key, required this.coordinates, required this.radius});
+  const ClockInScreen({super.key, required this.coordinates, required this.radius});
 
   @override
   State<ClockInScreen> createState() => _ClockInScreenState();
@@ -27,7 +27,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
   bool timerStated = false;
 
   void startTimer() {
-    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+    Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       setState(() {
         buttonText = '$countdown';
       });

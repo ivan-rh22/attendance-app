@@ -1,5 +1,4 @@
 import 'package:attendance_app/src/blocs/get_course_bloc/get_course_bloc.dart';
-import 'package:attendance_app/src/screens/views/prof/views/prof_course_details_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfCourseDetailsController extends StatefulWidget {
