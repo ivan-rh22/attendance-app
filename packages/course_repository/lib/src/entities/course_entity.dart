@@ -99,15 +99,21 @@ class CourseEntity {
 
   static Map<String, Map<DateTime, bool>> _attendance(Map<String, dynamic> json) {
     final Map<String, Map<DateTime, bool>> attendance = {};
-    json.forEach((key, value) {
-      final Map<DateTime, bool> dateMap = {};
-      value.forEach((innerKey, innerValue) {
-        final DateTime date = DateTime.parse(innerKey);
-        final bool value = innerValue;
-        dateMap[date] = value;
+    if (json.isNotEmpty) {
+      json.forEach((key, value) {
+        final Map<DateTime, bool> dateMap = {};
+        if(value is Map<String, dynamic>) {
+          value.forEach((innerKey, innerValue) {
+            final DateTime date = DateTime.parse(innerKey);
+            if(innerValue is bool) {
+              final bool value = innerValue;
+              dateMap[date] = value;
+            }
+          });
+        }
+        attendance[key] = dateMap;
       });
-      attendance[key] = dateMap;
-    });
+    }
     return attendance;
   }
 }
