@@ -360,6 +360,13 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
                               height: 170, 
                               width: MediaQuery.of(context).size.width,
                               child: GoogleMap(
+                                rotateGesturesEnabled: false,
+                                scrollGesturesEnabled: false,
+                                zoomGesturesEnabled: false,
+                                zoomControlsEnabled: false,
+                                myLocationEnabled: true,
+                                myLocationButtonEnabled: false,
+                                
                                 mapType: MapType.hybrid,
                                 onMapCreated: ((GoogleMapController controller) => mapController.complete(controller)),
                                 initialCameraPosition: CameraPosition(
