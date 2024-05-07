@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-bool clocked = false, allowed = false;
+bool clocked = false, inside = false;
 
 class ClockInScreen extends StatefulWidget {
   LatLng coordinates;
@@ -23,36 +23,33 @@ class _ClockInScreenState extends State<ClockInScreen> {
   Color buttonColor = Colors.green;
   String buttonText = 'Clock in';
   IconData currentIcon = Icons.play_arrow;
-  bool timerExpired = false;
-  Timer? timer;
-  int secondsRemaining = 10;
+  int countdown = 30;
+  bool timerStated = false;
 
   void startTimer() {
-    const sec = Duration(seconds: 1);
-    timer = Timer.periodic(sec, (timed) {
-      if(secondsRemaining == 0){
-        timed.cancel();
+    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        buttonText = '$countdown';
+      });
+
+      if(inside){
+        timer.cancel();
+        countdown = 30;
+        timerStated = false;
         setState(() {
-          btnLogic();
-          timerExpired = true;
+          buttonText = 'Clock out';
         });
       } else {
-        setState(() {
-          buttonText = "$secondsRemaining";
-          secondsRemaining--;
-        });
+        if(countdown <= 0){
+          timer.cancel();
+          clocked = false;
+          timerStated = false;
+          countdown = 30;
+        } else {
+          countdown--;
+        }
       }
     });
-  }
-
-  void stopTimer() {
-    if(timer != null) {
-      timer!.cancel();
-      timer = null;
-      setState(() {
-        secondsRemaining = 10;
-      });
-    }
   }
 
 
@@ -131,7 +128,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
         double distance = calcDistance(currentLocation.latitude!, currentLocation.longitude!, widget.coordinates.latitude, widget.coordinates.longitude);
         if(distance <= widget.radius) {
           setState(() {
-            allowed = true;
+            inside = true;
             if(buttonText == "Move Closer"){
               buttonColor = Colors.green;
               buttonText = "Clock In";
@@ -140,16 +137,17 @@ class _ClockInScreenState extends State<ClockInScreen> {
           });
         } else {
           setState(() {
-            allowed = false;
+            inside = false;
             if(!clocked){
               buttonColor = Colors.blueGrey;
               buttonText = "Move Closer";
               currentIcon = Icons.directions_walk;
             } else {
               //Here would go the timer logic.
-              setState(() {
+              if(!timerStated){
+                timerStated = true;
                 startTimer();
-              });
+              }
             }
           });
         }
@@ -158,8 +156,8 @@ class _ClockInScreenState extends State<ClockInScreen> {
   }
 
   btnLogic(){
-    //If allowed and not clocked in this happens when i push
-    if(allowed && !clocked){
+    //If inside and not clocked in this happens when i push
+    if(inside && !clocked){
       setState((){
         clocked = true;
         buttonColor = Colors.red;
@@ -167,8 +165,8 @@ class _ClockInScreenState extends State<ClockInScreen> {
         currentIcon = Icons.pause;
       });
     }
-    //if allowed and clocked in this happens when i push
-    else if(allowed && clocked){
+    //if inside and clocked in this happens when i push or If not inside but clocked in this happens when i push
+    else if((inside && clocked) || (!inside && clocked)){
       setState((){
         clocked = false;
         buttonColor = Colors.green;
@@ -176,32 +174,15 @@ class _ClockInScreenState extends State<ClockInScreen> {
         currentIcon = Icons.play_arrow;
       });
     }
-    //If not allowed but clocked in this happens when i push
-    else if(!allowed && clocked) {
-      setState((){
-        clocked = false;
-        buttonColor = Colors.green;
-        buttonText = "Clock in";
-        currentIcon = Icons.play_arrow;
-      });
-    }
-    //If not allowed and not clocked in I should see a gray button;
-    else if(!allowed && !clocked){
-      if(timerExpired) {
-        setState(() {
-          timerExpired = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('You have been clocked out!'), backgroundColor: Colors.red,));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
-      }
+    //If not inside and not clocked in I should see a gray button;
+    else if(!inside && !clocked){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
     }
   }
 
   @override
   void dispose() {
     _locationSubscription?.cancel();
-    stopTimer();
     super.dispose();
   }
 }
