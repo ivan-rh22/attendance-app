@@ -16,6 +16,10 @@ class ClockInBloc extends Bloc<ClockInEvent, ClockInState> {
           await _courseRepository.setAttendance(event.courseId, event.date, event.userId, event.present);
           emit(ClockInSuccess());
         } 
+        if(event is ClockOutRequest) {
+          await _courseRepository.setAttendance(event.courseId, event.date, event.userId, event.present);
+          emit(ClockOutSuccess());
+        }
       } catch (e) {
         String error = e.toString();
         if (error.contains('Course not found')) {

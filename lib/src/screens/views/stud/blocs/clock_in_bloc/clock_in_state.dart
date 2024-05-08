@@ -18,3 +18,13 @@ final class ClockInFailure extends ClockInState {
   @override 
   List<Object> get props => [error];
 }
+
+final class ClockOutSuccess extends ClockInState {}
+final class ClockOutFailure extends ClockInState {
+  final String error;
+
+  const ClockOutFailure({required this.error});
+
+  @override 
+  List<Object> get props => [error];
+}
