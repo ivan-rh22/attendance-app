@@ -1,5 +1,7 @@
 import 'package:attendance_app/src/blocs/get_course_bloc/get_course_bloc.dart';
-import 'package:attendance_app/src/screens/views/prof/views/prof_course_details_screen.dart';
+import 'package:attendance_app/src/screens/views/prof/views/course_details/attendance_screen.dart';
+import 'package:attendance_app/src/screens/views/prof/views/course_details/course_info_screen.dart';
+import 'package:attendance_app/src/screens/views/prof/views/course_details/student_list_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfCourseDetailsController extends StatefulWidget {
@@ -62,9 +64,9 @@ class _ProfCourseDetailsControllerState extends State<ProfCourseDetailsControlle
                         child: TabBarView(
                           controller: tabController,
                           children: [
-                            CourseDetailsScreen(course: course!),
+                            StudentListScreen(course: course!),
                             CourseDetailsScreen(course: course),
-                            CourseDetailsScreen(course: course),
+                            AttendanceReportScreen(course: course),
                           ],
                         )
                       )
