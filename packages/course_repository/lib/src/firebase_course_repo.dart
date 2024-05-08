@@ -196,4 +196,33 @@ class FirebaseCourseRepo implements CourseRepository {
     }
   } 
 
+  @override 
+  Future<void> setAttendance(String courseId, DateTime date, String userId, bool present) async {
+    try{
+      final courseSnapshot = await coursesCollection.doc(courseId).get();
+      if(courseSnapshot.exists) {
+        final courseData = courseSnapshot.data();
+        // convert courseData to Course object
+        final course = Course.fromEntity(CourseEntity.fromJson(courseData!));
+        print(course.attendance);
+        final today = DateTime(date.year, date.month, date.day);
+        course.attendance[userId] = {
+          today: present,
+        };
+        print(course.attendance);
+        
+        // convert back to json
+        final courseJson = course.toEntity().toJson();
+        return coursesCollection.doc(courseId).update({'attendance': courseJson['attendance']});
+      } else {
+        throw Exception('Course not found');
+      }
+
+      
+    } catch(e) {
+      log('Error setting Attendance: ${e.toString()}');
+      rethrow;
+    }
+  }
+
 }

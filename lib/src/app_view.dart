@@ -1,6 +1,7 @@
 import 'package:attendance_app/src/screens/auth/blocs/sign_in_bloc/sign_in_bloc.dart';
 import 'package:attendance_app/src/screens/views/prof/blocs/create_course_bloc/bloc/create_course_bloc.dart';
 import 'package:attendance_app/src/screens/views/prof/pcontroller.dart';
+import 'package:attendance_app/src/screens/views/stud/blocs/clock_in_bloc/clock_in_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/blocs/join_course_bloc/join_course_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/blocs/leave_course_bloc/leave_course_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/scontroller.dart';
@@ -30,6 +31,9 @@ class MyAppView extends StatelessWidget {
         ),
         BlocProvider<LeaveCourseBloc>(
           create: (context) => LeaveCourseBloc(FirebaseCourseRepo()),
+        ),
+        BlocProvider<ClockInBloc>(
+          create: (context) => ClockInBloc(FirebaseCourseRepo()),
         ),
       ],
       child: MaterialApp(

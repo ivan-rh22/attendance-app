@@ -90,7 +90,7 @@ class CourseEntity {
     attendance.forEach((key, value) {
       final Map<String, bool> dateMap = {};
       value.forEach((innerKey, innerValue) {
-        dateMap[innerKey.toIso8601String()] = innerValue;
+        dateMap[innerKey.toString()] = innerValue;
       });
       json[key] = dateMap;
     });
