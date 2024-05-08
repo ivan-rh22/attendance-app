@@ -190,4 +190,29 @@ class FirebaseCourseRepo implements CourseRepository {
     }
   } 
 
+  @override 
+  Future<void> setAttendance(String courseId, DateTime date, String userId, bool present) async {
+    try{
+      final courseSnapshot = await coursesCollection.doc(courseId).get();
+      if(courseSnapshot.exists) {
+        final courseData = courseSnapshot.data();
+        final Map<String, Map<DateTime, bool>> attendance = courseData?['attendance'] ?? [];
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        
+        attendance[userRef.id.toString()] = {
+          date: present,
+        };
+
+        return coursesCollection.doc(courseId).update({'attendance': attendance});
+      } else {
+        throw Exception('Course not found');
+      }
+
+      
+    } catch(e) {
+      log('Error setting course data: ${e.toString()}');
+      rethrow;
+    }
+  }
+
 }

@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/Utils/geofence_help.dart';
+import 'package:attendance_app/src/screens/views/stud/blocs/clock_in_bloc/clock_in_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -9,7 +12,8 @@ bool clocked = false, inside = false;
 class ClockInScreen extends StatefulWidget {
   final LatLng coordinates;
   final double radius;
-  const ClockInScreen({super.key, required this.coordinates, required this.radius});
+  final String courseId;
+  const ClockInScreen({super.key, required this.coordinates, required this.radius, required this.courseId});
 
   @override
   State<ClockInScreen> createState() => _ClockInScreenState();
@@ -56,13 +60,40 @@ class _ClockInScreenState extends State<ClockInScreen> {
   @override
   void initState() {
     super.initState();
+    
     getLocation();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack( children: <Widget> [
+    return BlocListener<ClockInBloc, ClockInState>(
+      listener: (context, state) {
+        if(state is ClockInSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text('Marked as present'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (state is ClockInFailure) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: Text(state.error),
+              actions: <Widget> [
+                TextButton(
+                  onPressed: () {
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      child: Stack( children: <Widget> [
         Center( 
           child: _currentPos == null ? 
           const Center(child: CircularProgressIndicator()) : 
@@ -159,6 +190,14 @@ class _ClockInScreenState extends State<ClockInScreen> {
     //If inside and not clocked in this happens when i push
     if(inside && !clocked){
       setState((){
+        DateTime now = DateTime.now();
+        context.read<ClockInBloc>().add(
+          ClockInRequest(
+            courseId: widget.courseId, 
+            date: now, 
+            userId: context.read<AuthenticationBloc>().state.user!.userId, 
+            present: true)
+        );
         clocked = true;
         buttonColor = Colors.red;
         buttonText = "Clock Out";
