@@ -205,7 +205,9 @@ class FirebaseCourseRepo implements CourseRepository {
         // convert courseData to Course object
         final course = Course.fromEntity(CourseEntity.fromJson(courseData!));
         final today = DateTime(date.year, date.month, date.day);
-        course.attendance[userId] = {
+        // get user reference based on user id
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        course.attendance[userRef.path] = {
           today: present,
         };        
         // convert back to json

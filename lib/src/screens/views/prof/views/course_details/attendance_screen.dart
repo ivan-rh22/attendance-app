@@ -34,6 +34,8 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
                           studentRef: widget.course.students[index],
                           daysOfWeek: widget.course.daysOfWeek,
                           attendance: widget.course.attendance,
+                          startTime: widget.course.startTime,
+                          endTime: widget.course.endTime,
                         );
                       }
                       else if(snapshot.hasError){
@@ -65,6 +67,8 @@ class StudentReport extends StatelessWidget {
   final dynamic studentRef;
   final List<int> daysOfWeek;
   final Map<String, Map<DateTime, bool>> attendance;
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
 
   const StudentReport({
     super.key,
@@ -72,12 +76,15 @@ class StudentReport extends StatelessWidget {
     required this.studentRef,
     required this.daysOfWeek,
     required this.attendance,
+    required this.startTime,
+    required this.endTime,
   });
 
   // get attendance for the current week
   Map<DateTime, bool> getAttendanceForWeek() {
     final now = DateTime.now();
     final daysOfWeekSet = daysOfWeek.toSet();
+
     final days = daysOfWeekSet.map((day) {
       final date = now.subtract(Duration(days: now.weekday - (day+1)));
       return DateTime(date.year, date.month, date.day);
@@ -87,8 +94,7 @@ class StudentReport extends StatelessWidget {
         if (attendance[studentRef.path]?.containsKey(day) == true)
           day: attendance[studentRef.path]![day]!
         else
-          day: false,
-    };
+          day: false    };
   }
 
   @override
@@ -102,6 +108,10 @@ class StudentReport extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
             children: weekAttendance.keys.toList().map((day) {
+              // day using start time of course
+              final startDay = DateTime(day.year, day.month, day.day, startTime.hour, startTime.minute);
+              // day using end time of course
+              final endDay = DateTime(day.year, day.month, day.day, endTime.hour, endTime.minute);
               return Container(
                 width: 20,
                 height: 20,
@@ -109,9 +119,11 @@ class StudentReport extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: weekAttendance[day] == true
                     ? Colors.green
-                    : weekAttendance[day] == false && DateTime.now().isAfter(day)
+                    : weekAttendance[day] == false && DateTime.now().isAfter(endDay)
                       ? Colors.red
-                      : Colors.grey,
+                      : weekAttendance[day] == false && DateTime.now().isAfter(startDay) && DateTime.now().isBefore(endDay)
+                        ? Colors.orange
+                        : Colors.white,
                   borderRadius: BorderRadius.circular(5),
                   border: Border.all(color: Colors.black),
                 ),
