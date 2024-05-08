@@ -85,6 +85,7 @@ class _ClockInScreenState extends State<ClockInScreen> {
               actions: <Widget> [
                 TextButton(
                   onPressed: () {
+                    Navigator.of(context).pop();
                   },
                   child: const Text('OK'),
                 ),
@@ -196,7 +197,8 @@ class _ClockInScreenState extends State<ClockInScreen> {
             courseId: widget.courseId, 
             date: now, 
             userId: context.read<AuthenticationBloc>().state.user!.userId, 
-            present: true)
+            present: true
+          )
         );
         clocked = true;
         buttonColor = Colors.red;

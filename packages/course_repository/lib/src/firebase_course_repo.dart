@@ -202,7 +202,7 @@ class FirebaseCourseRepo implements CourseRepository {
         attendance[userRef.id.toString()] = {
           date: present,
         };
-
+        await FirebaseFirestore.instance.collection('courses').doc(userId).update({'attendance' : attendance});
         return coursesCollection.doc(courseId).update({'attendance': attendance});
       } else {
         throw Exception('Course not found');
@@ -210,7 +210,7 @@ class FirebaseCourseRepo implements CourseRepository {
 
       
     } catch(e) {
-      log('Error setting course data: ${e.toString()}');
+      log('Error setting Attendance: ${e.toString()}');
       rethrow;
     }
   }

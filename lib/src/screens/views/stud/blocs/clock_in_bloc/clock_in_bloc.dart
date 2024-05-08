@@ -20,7 +20,7 @@ class ClockInBloc extends Bloc<ClockInEvent, ClockInState> {
         String error = e.toString();
         if (error.contains('Course not found')) {
           emit(const ClockInFailure(error: 'Course not found'));
-        }
+        } else {emit(ClockInFailure(error: e.toString()));}
       }
     });
   }
