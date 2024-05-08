@@ -196,14 +196,18 @@ class FirebaseCourseRepo implements CourseRepository {
       final courseSnapshot = await coursesCollection.doc(courseId).get();
       if(courseSnapshot.exists) {
         final courseData = courseSnapshot.data();
-        final Map<String, Map<DateTime, bool>> attendance = courseData?['attendance'] ?? [];
-        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
-        
-        attendance[userRef.id.toString()] = {
-          date: present,
+        // convert courseData to Course object
+        final course = Course.fromEntity(CourseEntity.fromJson(courseData!));
+        print(course.attendance);
+        final today = DateTime(date.year, date.month, date.day);
+        course.attendance[userId] = {
+          today: present,
         };
-        await FirebaseFirestore.instance.collection('courses').doc(userId).update({'attendance' : attendance});
-        return coursesCollection.doc(courseId).update({'attendance': attendance});
+        print(course.attendance);
+        
+        // convert back to json
+        final courseJson = course.toEntity().toJson();
+        return coursesCollection.doc(courseId).update({'attendance': courseJson['attendance']});
       } else {
         throw Exception('Course not found');
       }
