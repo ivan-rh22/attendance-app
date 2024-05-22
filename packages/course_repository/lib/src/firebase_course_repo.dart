@@ -113,8 +113,10 @@ class FirebaseCourseRepo implements CourseRepository {
           throw Exception('User already joined course');
         }
 
+        String path = userRef.path; // convert user reference to path string for attendance map
+
         students.add(userRef);
-        attendance[userRef.id] = {};
+        attendance[path] = {};
 
         // add the course to the user's courses list
         final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -142,6 +144,7 @@ class FirebaseCourseRepo implements CourseRepository {
       if(courseSnapshot.exists){
         final courseData = courseSnapshot.data();
         final List<dynamic> students = courseData?['students'] ?? [];
+        final Map<dynamic, dynamic> attendance = courseData?['attendance'] ?? {};
 
         // get user reference based on user id
         final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
@@ -149,8 +152,11 @@ class FirebaseCourseRepo implements CourseRepository {
           throw Exception('User not in course');
         }
 
-        // remove the user from the course's students list
+        // remove the user from the course's students list and attendance map
+        String path = userRef.path; // convert user reference to path string for attendance map
+
         students.remove(userRef);
+        attendance.remove(path);
 
         // remove the course from the user's courses list
         final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -189,5 +195,31 @@ class FirebaseCourseRepo implements CourseRepository {
       rethrow;
     }
   } 
+
+  @override 
+  Future<void> setAttendance(String courseId, DateTime date, String userId, bool present) async {
+    try{
+      final courseSnapshot = await coursesCollection.doc(courseId).get();
+      if(courseSnapshot.exists) {
+        final courseData = courseSnapshot.data();
+        // convert courseData to Course object
+        final course = Course.fromEntity(CourseEntity.fromJson(courseData!));
+        final today = DateTime(date.year, date.month, date.day);
+        // get user reference based on user id
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        course.attendance[userRef.path]![today] = present;        
+        // convert back to json
+        final courseJson = course.toEntity().toJson();
+        return coursesCollection.doc(courseId).update({'attendance': courseJson['attendance']});
+      } else {
+        throw Exception('Course not found');
+      }
+
+      
+    } catch(e) {
+      log('Error setting Attendance: ${e.toString()}');
+      rethrow;
+    }
+  }
 
 }

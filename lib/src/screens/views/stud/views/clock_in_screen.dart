@@ -1,15 +1,25 @@
 import 'dart:async';
+import 'package:attendance_app/src/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:attendance_app/src/screens/views/stud/Utils/geofence_help.dart';
+import 'package:attendance_app/src/screens/views/stud/blocs/clock_in_bloc/clock_in_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-
-bool clocked = false, inside = false;
 
 class ClockInScreen extends StatefulWidget {
   final LatLng coordinates;
   final double radius;
-  const ClockInScreen({super.key, required this.coordinates, required this.radius});
+  final String courseId;
+  final bool attendanceStatus;
+  final LatLng? currentPos;
+  const ClockInScreen(
+      {super.key,
+      required this.coordinates,
+      required this.radius,
+      required this.courseId,
+      required this.attendanceStatus,
+      required this.currentPos});
 
   @override
   State<ClockInScreen> createState() => _ClockInScreenState();
@@ -20,22 +30,28 @@ class _ClockInScreenState extends State<ClockInScreen> {
   final Location locationController = Location();
   LatLng? _currentPos;
   StreamSubscription<LocationData>? _locationSubscription;
-  Color buttonColor = Colors.green;
-  String buttonText = 'Clock in';
-  IconData currentIcon = Icons.play_arrow;
+  late Color buttonColor;
+  late String buttonText;
+  late IconData currentIcon;
   int countdown = 30;
-  bool timerStated = false;
+  bool timerStarted = false;
+  late bool clocked;
+  late bool inside;
 
   void startTimer() {
     Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       setState(() {
         buttonText = '$countdown';
+        currentIcon = Icons.timer;
+        buttonColor = Colors.red;
       });
+
+      getLocation();
 
       if(inside){
         timer.cancel();
         countdown = 30;
-        timerStated = false;
+        timerStarted = false;
         setState(() {
           buttonText = 'Clock out';
         });
@@ -43,7 +59,8 @@ class _ClockInScreenState extends State<ClockInScreen> {
         if(countdown <= 0){
           timer.cancel();
           clocked = false;
-          timerStated = false;
+          BlocProvider.of<ClockInBloc>(context).add(ClockOutRequest(courseId: widget.courseId, date: DateTime.now(), userId: context.read<AuthenticationBloc>().state.user!.userId, present: clocked) );
+          timerStarted = false;
           countdown = 30;
         } else {
           countdown--;
@@ -56,13 +73,45 @@ class _ClockInScreenState extends State<ClockInScreen> {
   @override
   void initState() {
     super.initState();
-    getLocation();
+    clocked = widget.attendanceStatus;
+    _currentPos = widget.currentPos;
+    inside = calcDistance(_currentPos!.latitude, _currentPos!.longitude, widget.coordinates.latitude, widget.coordinates.longitude) <= widget.radius;
+    btnLogic();
   }
+  
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack( children: <Widget> [
+    getLocation();
+    return BlocListener<ClockInBloc, ClockInState>(
+      listener: (context, state) {
+        if(state is ClockInSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text('Marked as present'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else if (state is ClockInFailure) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: Text(state.error),
+              actions: <Widget> [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+      child: Stack( children: <Widget> [
         Center( 
           child: _currentPos == null ? 
           const Center(child: CircularProgressIndicator()) : 
@@ -82,7 +131,19 @@ class _ClockInScreenState extends State<ClockInScreen> {
           bottom: 20, right: 20,
           width: 130,
           child: FloatingActionButton.extended(
-            onPressed: btnLogic,
+            onPressed: () {
+              setState(() {
+                if(inside){
+                  if(clocked){
+                    BlocProvider.of<ClockInBloc>(context).add(ClockOutRequest(courseId: widget.courseId, date: DateTime.now(), userId: context.read<AuthenticationBloc>().state.user!.userId, present: !clocked) );
+                  } else {
+                    BlocProvider.of<ClockInBloc>(context).add(ClockInRequest(courseId: widget.courseId, date: DateTime.now(), userId: context.read<AuthenticationBloc>().state.user!.userId, present: !clocked));
+                  }
+                  clocked = !clocked;
+                }
+                btnLogic();
+              });
+            },
             label: Text(buttonText), 
             icon: Icon(currentIcon), 
             foregroundColor: Colors.white, 
@@ -126,57 +187,52 @@ class _ClockInScreenState extends State<ClockInScreen> {
           _camToPos(_currentPos!);
         });
         double distance = calcDistance(currentLocation.latitude!, currentLocation.longitude!, widget.coordinates.latitude, widget.coordinates.longitude);
-        if(distance <= widget.radius) {
-          setState(() {
-            inside = true;
-            if(buttonText == "Move Closer"){
-              buttonColor = Colors.green;
-              buttonText = "Clock In";
-              currentIcon = Icons.play_arrow;
-            }
-          });
-        } else {
-          setState(() {
-            inside = false;
-            if(!clocked){
-              buttonColor = Colors.blueGrey;
-              buttonText = "Move Closer";
-              currentIcon = Icons.directions_walk;
-            } else {
-              //Here would go the timer logic.
-              if(!timerStated){
-                timerStated = true;
-                startTimer();
-              }
-            }
-          });
-        }
+        setState(() {
+          inside = distance <= widget.radius;
+          btnLogic();
+        });
       }
     });
   }
 
   btnLogic(){
-    //If inside and not clocked in this happens when i push
     if(inside && !clocked){
-      setState((){
-        clocked = true;
-        buttonColor = Colors.red;
-        buttonText = "Clock Out";
-        currentIcon = Icons.pause;
-      });
-    }
-    //if inside and clocked in this happens when i push or If not inside but clocked in this happens when i push
-    else if((inside && clocked) || (!inside && clocked)){
-      setState((){
-        clocked = false;
+      setState(() {
         buttonColor = Colors.green;
         buttonText = "Clock In";
         currentIcon = Icons.play_arrow;
       });
     }
-    //If not inside and not clocked in I should see a gray button;
+    else if((inside && clocked)){
+      setState((){
+        buttonColor = Colors.red;
+        buttonText = "Clock Out";
+        currentIcon = Icons.pause;
+      });
+    }
     else if(!inside && !clocked){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Not within classroom area. Move closer.')));
+      setState(() {
+        buttonColor = Colors.blueGrey;
+        buttonText = "Move Closer";
+        currentIcon = Icons.directions_walk;
+      });
+    } 
+    else if(!inside && clocked){
+      if(timerStarted){
+        setState(() {
+          buttonColor = Colors.red;
+          buttonText = '$countdown';
+          currentIcon = Icons.timer;
+        });
+      } else {
+        setState(() {
+          timerStarted = true;
+          startTimer();
+          buttonColor = Colors.red;
+          buttonText = "Clock Out";
+          currentIcon = Icons.pause;
+        });
+      }
     }
   }
 
